@@ -1,0 +1,51 @@
+<!--<html manifest='page.appcache'>-->
+<html>
+<head>
+	<meta charset='UTF-8'>
+	<meta http-equiv='Content-Type' content='text/html; charset=utf8'>
+	<meta name='generator' content='PHP/PsPad'>
+	<meta name='robots' content='noarchive'>
+	<meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1'>
+	<meta name='apple-mobile-web-app-capable' content='yes'>
+	<meta name='mobile-web-app-capable' content='yes'>
+	<link href='touch-icon.png' type='image/png' rel='shortcut icon'>
+	<link href='touch-icon.png' rel='apple-touch-icon'>
+	<title>R.I.F.T.3</title>
+	<link rel='stylesheet' type='text/css' href='res/css/style.css'>
+	<script type='text/javascript' src='res/js/jquery-1.11.3.min.js'></script>
+	<script type='text/javascript' src='main.js'></script>
+</head>
+<body>
+	<div id='header'>
+		<!--<span>R.I.F.T.3 - <a href='index.php'>RELOAD</a></span>-->
+		<a href='index.html'><img src='res/img/reload.png' border='0' width='48' height='48' hspace='3'></a>
+		<!--<a href='#' onclick='return getConfig();'><img src='res/img/config.png' border='0' width='48' height='48' hspace='3'></a>-->
+		<a href='#' onclick='return displayLog();'><img src='res/img/log.png' border='0' width='48' height='48' hspace='3'></a>
+		<a href='#' onclick='return getReceipes();'><img src='res/img/receipes.png' border='0' width='48' height='48' hspace='3'></a>
+		<a href='#' onclick='return getSensors();'><img src='res/img/sensors.png' border='0' width='48' height='48' hspace='3'></a>
+		<a href='#' onclick='return getDevices();'><img src='res/img/devices.png' border='0' width='48' height='48' hspace='3'></a>
+	</div>
+	<div id='content' class='js-content'>
+		<!--Please wait...-->
+	</div>
+	
+	<br><br><button onclick='return DebugTest();'>Debug Test</button><br><br>
+	<div class='js-debug debug'>debug v23</div>
+</body>
+
+<!--
+<script type="text/javascript">
+	function onUpdateReady() {
+		window.applicationCache.swapCache();
+        console.log("appcache updated");
+		alert("offline files will be updated");
+		window.location.reload();
+	}
+	window.applicationCache.addEventListener('updateready', onUpdateReady);
+	if(window.applicationCache.status === window.applicationCache.UPDATEREADY) {
+		onUpdateReady();
+	}
+</script>
+-->
+
+</html>
