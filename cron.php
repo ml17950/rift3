@@ -16,5 +16,8 @@
 	
 	$rift3->receipe_execute();
 	
+	if (intval(date('i')) == 0)
+		$rift3->log_resize(500);
+	
 // 	$rift3->log_resize(5);
 ?>
