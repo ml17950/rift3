@@ -18,6 +18,9 @@ class clsRIFT3 {
 		
 		define('STATUSDATA', ABSPATH.'/data/status/');
 		
+		if (!is_dir('data'))
+			$this->init_directories();
+		
 		$this->sensor_status = array();
 		$this->sensor_types = array();
 		$this->sensor_names = array();
