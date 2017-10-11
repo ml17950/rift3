@@ -18,7 +18,7 @@ class clsRIFT3 {
 		
 		define('STATUSDATA', ABSPATH.'/data/status/');
 		
-		if (!is_dir('data'))
+		if (!is_file(ABSPATH.'/data/last.status'))
 			$this->init_directories();
 		
 		$this->sensor_status = array();
@@ -100,6 +100,8 @@ class clsRIFT3 {
 			mkdir('data/logs', 0775);
 			chmod('data/logs', 0775);
 		}
+		
+		file_put_contents(ABSPATH.'/data/last.status', time());
 	}
 	
 	function generate_guid() {
