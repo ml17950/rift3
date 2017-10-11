@@ -11,9 +11,9 @@
 	<link href='touch-icon.png' type='image/png' rel='shortcut icon'>
 	<link href='touch-icon.png' rel='apple-touch-icon'>
 	<title>R.I.F.T.3</title>
-	<link rel='stylesheet' type='text/css' href='res/css/style-dev-4f.css'>
+	<link rel='stylesheet' type='text/css' href='res/css/style-dev-4g.css?20171011'>
 	<script type='text/javascript' src='res/js/jquery-1.11.3.min.js'></script>
-	<script type='text/javascript' src='main.js'></script>
+	<script type='text/javascript' src='main.js?20171011'></script>
 </head>
 <body>
 	<div id='header'>
@@ -36,13 +36,42 @@
 				<input type='hidden' name='oid' value=''>
 				<div class='frmrow'><label for='sid'>ID</label><input type='text' name='sid' value=''></div>
 				<div class='frmrow'><label for='sname'>Name</label><input type='text' name='sname' value=''></div>
-				<div class='frmrow'><label for='stype'>Typ</label><input type='text' name='stype' value=''></div>
+				<div class='frmrow'><label for='stype'>Typ</label><input type='hidden' name='stype' value='' id='js-stype'>
+					<img src='res/img/types/computer.png' onclick='$("#js-stype").val("computer");' border='0' width='32' height='32'>
+					<img src='res/img/types/light.png' onclick='$("#js-stype").val("light");' border='0' width='32' height='32'>
+					<img src='res/img/types/switch.png' onclick='$("#js-stype").val("switch");' border='0' width='32' height='32'>
+					<img src='res/img/types/daynight.png' onclick='$("#js-stype").val("daynight");' border='0' width='32' height='32'>
+					<img src='res/img/types/temp.png' onclick='$("#js-stype").val("temp");' border='0' width='32' height='32'>
+					<img src='res/img/types/weather.png' onclick='$("#js-stype").val("weather");' border='0' width='32' height='32'>
+					<img src='res/img/types/time.png' onclick='$("#js-stype").val("time");' border='0' width='32' height='32'>
+					<img src='res/img/types/date.png' onclick='$("#js-stype").val("date");' border='0' width='32' height='32'>
+					<img src='res/img/types/unknown.png' onclick='$("#js-stype").val("unknown");' border='0' width='32' height='32'>
+				</div>
 				<div class='frmbtns'>
 					<button class='btn-delete' onclick='return sensor.remove();'>Löschen</button>
 					<button class='btn-cancel' onclick='return sensor.reset();'>Abbrechen</button>
 					<button class='btn-save' onclick='return sensor.save();'>Speichern</button>
 				</div>
 			</form>
+		</div>
+		
+		<div class='js-widgets widget-container'>
+			<div class='widget-box'>
+				<div class='widget-icon'><img src='res/img/switches/daynight-OFF.png' border='0' width='56' height='56'></div>
+				<div class='widget-name'>Tag/Nacht</div>
+			</div>
+			<div class='widget-box'>
+				<div class='widget-icon'><img src='res/img/switches/daynight-OFF.png' border='0' width='56' height='56'></div>
+				<div class='widget-name'>Tag/Nacht</div>
+			</div>
+			<div class='widget-box'>
+				<div class='widget-icon'><img src='res/img/switches/computer-ON.png' border='0' width='56' height='56'></div>
+				<div class='widget-name'>Computer</div>
+			</div>
+			<div class='widget-box'>
+				<div class='widget-icon'><img src='res/img/switches/computer-OFF.png' border='0' width='56' height='56'></div>
+				<div class='widget-name'>Fernseher</div>
+			</div>
 		</div>
 		
 		<div class='js-switches switch-container'>

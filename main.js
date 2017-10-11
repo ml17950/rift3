@@ -43,7 +43,8 @@ function hideLoading() {
 	$('.js-loading').hide();
 }
 function displaySwitches() {
-	$('.js-switches').fadeIn('fast');
+	$('.js-widgets').show();
+	$('.js-switches').show();
 	$('.js-sensors').hide();
 	$('.js-receipes').hide();
 	$('.js-log').hide();
@@ -51,6 +52,7 @@ function displaySwitches() {
 	checkNewData();
 }
 function displaySensors() {
+	$('.js-widgets').hide();
 	$('.js-switches').hide();
 	$('.js-sensors').fadeIn('fast');
 	$('.js-receipes').hide();
@@ -59,12 +61,14 @@ function displaySensors() {
 	checkNewData();
 }
 function displayReceipes() {
+	$('.js-widgets').hide();
 	$('.js-switches').hide();
 	$('.js-sensors').hide();
 	$('.js-receipes').fadeIn('fast');
 	$('.js-log').hide();
 }
 function displayLog() {
+	$('.js-widgets').hide();
 	$('.js-switches').hide();
 	$('.js-sensors').hide();
 	$('.js-receipes').hide();
@@ -122,8 +126,22 @@ function updateUI() {
 // 	log('lastData: '+lastData);
 	
 	var jsonObj = JSON.parse(lastData);
+	var widget_html = ''; //<h1>Schalter '+now+'</h1>';
 	var switch_html = ''; //<h1>Schalter '+now+'</h1>';
 	var sensor_html = '<h1>Sensoren '+now+'</h1>';
+	
+// 	widget_html = 'X:'+jsonObj['sensors'].length;
+	
+// 	if (jsonObj['widgets'].length > 0) {
+		for (var k in jsonObj['widgets']) {
+			widget_html += "<div class='widget-box'>";
+			widget_html += "<div class='widget-icon'><img src='res/img/switches/"+jsonObj['widgets'][k]['t']+"-"+jsonObj['widgets'][k]['v']+".png' width='56' height='56' alt='"+jsonObj['widgets'][k]['t']+"-"+jsonObj['widgets'][k]['v']+"'></div>";
+			widget_html += "<div class='widget-name'>"+jsonObj['widgets'][k]['n']+"</div>";
+			widget_html += "</div>";
+		}
+// 	}
+
+
 	
 // 	sensor_html += "<div class='log-container'>";
 	for (var k in jsonObj['sensors']) {
@@ -159,6 +177,7 @@ function updateUI() {
 	}
 // 	sensor_html += "</div>";
 	
+	$('.js-widgets').html(widget_html);
 	$('.js-switches').html(switch_html);
 	$('.js-sensors').html(sensor_html);
 }

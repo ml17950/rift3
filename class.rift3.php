@@ -4,10 +4,12 @@ class clsRIFT3 {
 	
 	var $sensor_status;
 	var $sensor_types;
+	var $sensor_names;
 	var $sensor_changed;
 	var $devices;
 	var $status;
 	var $receipes;
+	var $widgets;
 	
 	function __construct() {
 // 		echo __CLASS__.'::'.__FUNCTION__.'<br>';
@@ -18,10 +20,14 @@ class clsRIFT3 {
 		
 		$this->sensor_status = array();
 		$this->sensor_types = array();
+		$this->sensor_names = array();
 		$this->sensor_changed = array();
 		$this->devices = array();
 		$this->sensor_status = array();
 		$this->receipes = array();
+		$this->widgets = array();
+		
+		$this->widgets = array('ESP-LIGHT','IFTTT-Weather','ESP-TEMP','datetime','Tower','ESP-ROBBY','Dose6');
 	}
 	
 // 	function __destruct() {
@@ -323,12 +329,19 @@ class clsRIFT3 {
 				$current_type = file_get_contents($file);
 				$key = substr(basename($file), 0, -5);
 				
-// 				echo $key," :: [",$current_type,"]<br>";
+				//echo $key," :: [",$current_type,"]<br>";
 				
 				$this->sensor_types[$key] = $current_type;
 				
-				if (array_key_exists($key, $this->devices))
+				if (array_key_exists($key, $this->devices)) {
 					$this->devices[$key]['type'] = $current_type;
+					$this->sensor_names[$key] = $this->devices[$key]['name'];
+				}
+				else {
+					$name_file = ABSPATH.'/data/names/'.$key.'.name';
+					if (file_exists($name_file))
+						$this->sensor_names[$key] = file_get_contents($name_file);
+				}
 			}
 		}
 	}
@@ -505,7 +518,41 @@ class clsRIFT3 {
 	}
 	
 	function ajax_get_last_data_as_json() {
+		$jsonArray['widgets'] = array();
 		$jsonArray['sensors'] = array();
+		
+		if (count($this->widgets) > 0) {
+			foreach ($this->widgets as $i => $widget_key) {
+				if (array_key_exists($widget_key, $this->sensor_status)) {
+					$jsonArray['widgets'][$widget_key]['t'] = 'UNKNOWN';
+					$jsonArray['widgets'][$widget_key]['v'] = $this->sensor_status[$widget_key];
+					$jsonArray['widgets'][$widget_key]['n'] = $widget_key;
+				}
+				
+				if (array_key_exists($widget_key, $this->sensor_types))
+					$jsonArray['widgets'][$widget_key]['t'] = $this->sensor_types[$widget_key];
+				
+				if (array_key_exists($widget_key, $this->sensor_names))
+					$jsonArray['widgets'][$widget_key]['n'] = $this->sensor_names[$widget_key];
+				
+				switch ($jsonArray['widgets'][$widget_key]['t']) {
+					case 'weather':
+					//case 'daynight':
+						$jsonArray['widgets'][$widget_key]['n'] = $jsonArray['widgets'][$widget_key]['v'];
+						break;
+					
+					case 'time':
+						$jsonArray['widgets'][$widget_key]['n'] = $jsonArray['widgets'][$widget_key]['v'];
+						$jsonArray['widgets'][$widget_key]['v'] = 'ALL';
+						break;
+					
+					case 'temp':
+						$jsonArray['widgets'][$widget_key]['n'] = $jsonArray['widgets'][$widget_key]['v'].' °C';
+						$jsonArray['widgets'][$widget_key]['v'] = 'ALL';
+						break;
+				}
+			}
+		}
 		
 		foreach ($this->sensor_status as $key => $sensor_data) {
 			if (array_key_exists($key, $this->sensor_types))
@@ -524,6 +571,66 @@ class clsRIFT3 {
 		asort($jsonArray['sensors']);
 		
 // 		debugarr($jsonArray);
+		
+		return json_encode($jsonArray);
+	}
+	
+	function DEV_ajax_get_last_data_as_json() {
+		$jsonArray['widgets'] = array();
+		$jsonArray['sensors'] = array();
+		
+		foreach ($this->sensor_status as $key => $sensor_data) {
+			if (array_key_exists($key, $this->sensor_types))
+				$jsonArray['sensors'][$key]['t'] = $this->sensor_types[$key];
+			else
+				$jsonArray['sensors'][$key]['t'] = 'unknown';
+			if (array_key_exists($key, $this->devices))
+				$jsonArray['sensors'][$key]['n'] = $this->devices[$key]['name'];
+			else
+				$jsonArray['sensors'][$key]['n'] = $key;
+			$jsonArray['sensors'][$key]['v'] = $sensor_data;
+			//$jsonArray['sensors'][$key]['c'] = date('d.m.', $this->sensor_changed[$key])."<br>".date('H:i', $this->sensor_changed[$key]);
+			$jsonArray['sensors'][$key]['c'] = date('d.m.', $this->sensor_changed[$key])." ".date('H:i', $this->sensor_changed[$key]);
+		}
+		
+		if (count($this->widgets) > 0) {
+			foreach ($this->widgets as $i => $widget_key) {
+				echo "<hr>";
+				echo "widget_key: ",$widget_key,"<br>";
+				
+				if (array_key_exists($widget_key, $this->sensor_status)) {
+					$jsonArray['widgets'][$widget_key]['t'] = 'UNKNOWN';
+					$jsonArray['widgets'][$widget_key]['v'] = $this->sensor_status[$widget_key];
+					$jsonArray['widgets'][$widget_key]['n'] = 'A:'.$widget_key;
+				}
+				
+				if (array_key_exists($widget_key, $this->sensor_types))
+					$jsonArray['widgets'][$widget_key]['t'] = $this->sensor_types[$widget_key];
+				
+				if (array_key_exists($widget_key, $this->sensor_names))
+					$jsonArray['widgets'][$widget_key]['n'] = $this->sensor_names[$widget_key];
+			}
+		}
+		
+		
+// $this->sensor_names[$key]
+		
+// 		$jsonArray['widgets']['aaa']['t'] = 'light';
+// 		$jsonArray['widgets']['aaa']['v'] = 'ON';
+// 		$jsonArray['widgets']['aaa']['n'] = 'aaa';
+// 		$jsonArray['widgets']['bbb']['t'] = 'computer';
+// 		$jsonArray['widgets']['bbb']['v'] = 'ON';
+// 		$jsonArray['widgets']['bbb']['n'] = 'bbb';
+// 		$jsonArray['widgets']['ccc']['t'] = 'daynight';
+// 		$jsonArray['widgets']['ccc']['v'] = 'OFF';
+// 		$jsonArray['widgets']['ccc']['n'] = 'ccc';
+// 		$jsonArray['widgets']['ddd']['t'] = 'light';
+// 		$jsonArray['widgets']['ddd']['v'] = 'OFF';
+// 		$jsonArray['widgets']['ddd']['n'] = 'ddd';
+		
+		asort($jsonArray['sensors']);
+		
+		debugarr($jsonArray);
 		
 		return json_encode($jsonArray);
 	}
