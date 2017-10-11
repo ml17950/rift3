@@ -102,6 +102,7 @@ class clsRIFT3 {
 		}
 		
 		file_put_contents(ABSPATH.'/data/last.status', time());
+		chmod(ABSPATH.'/data/last.status', 0775);
 	}
 	
 	function generate_guid() {
