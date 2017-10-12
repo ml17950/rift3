@@ -130,14 +130,10 @@ class clsRIFT3 {
 	}
 	
 	function log_resize($num_of_lines = 100) {
-// TODO
 		$file = ABSPATH.'/data/rift3.log';
-		
 		$lines = file($file); // reads the file into an array by line
-		$flipped = array_reverse($lines); // reverse the order of the array
-		$keep = array_slice($flipped, 0, $num_of_lines); // keep the first 50 elements of the array
-		
-		file_put_contents($file, implode("", $keep));
+		$keep = array_slice($lines, ($num_of_lines * -1), $num_of_lines); // keep the last n elements of the array
+		file_put_contents($file, implode("", $keep)); // combine array and write it back to file
 	}
 	
 	function sensor_updateall() {
