@@ -546,7 +546,6 @@ class clsRIFT3 {
 				
 				switch ($jsonArray['widgets'][$widget_key]['t']) {
 					case 'weather':
-					//case 'daynight':
 						$jsonArray['widgets'][$widget_key]['n'] = $jsonArray['widgets'][$widget_key]['v'];
 						break;
 					
@@ -569,11 +568,12 @@ class clsRIFT3 {
 			else
 				$jsonArray['sensors'][$key]['t'] = 'unknown';
 			if (array_key_exists($key, $this->devices))
-				$jsonArray['sensors'][$key]['n'] = $this->devices[$key]['name'];
+				$jsonArray['sensors'][$key]['n'] = $this->devices[$key]['name']; //." [".$key."]";
+			elseif (array_key_exists($key, $this->sensor_names))
+				$jsonArray['sensors'][$key]['n'] = $this->sensor_names[$key]; //." (".$key.")";
 			else
 				$jsonArray['sensors'][$key]['n'] = $key;
 			$jsonArray['sensors'][$key]['v'] = $sensor_data;
-			//$jsonArray['sensors'][$key]['c'] = date('d.m.', $this->sensor_changed[$key])."<br>".date('H:i', $this->sensor_changed[$key]);
 			$jsonArray['sensors'][$key]['c'] = date('d.m.', $this->sensor_changed[$key])." ".date('H:i', $this->sensor_changed[$key]);
 		}
 		
