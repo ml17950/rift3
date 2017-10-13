@@ -10,6 +10,7 @@ class clsRIFT3 {
 	var $status;
 	var $receipes;
 	var $widgets;
+	var $last_status_change;
 	
 	function __construct() {
 // 		echo __CLASS__.'::'.__FUNCTION__.'<br>';
@@ -30,7 +31,7 @@ class clsRIFT3 {
 		$this->receipes = array();
 		$this->widgets = array();
 		
-		$this->widgets = array('ESP-LIGHT','IFTTT-Weather','ESP-TEMP','datetime','Tower','ESP-ROBBY','Dose6');
+		$this->widgets = array('ESP-LIGHT','IFTTT-Weather','ESP-TEMP','Time','PC','TV','ESP-ROBBY');
 	}
 	
 // 	function __destruct() {
@@ -139,33 +140,55 @@ class clsRIFT3 {
 	function sensor_updateall() {
 		$sensors = array();
 		$files = @glob(ABSPATH.'/sensors/*.php');
+		$this->last_status_change = 0;
 		
 		if (is_array($files) && (count($files) > 0)) {
 			$last_change = filemtime(ABSPATH.'/data/last.status');
 			
 			foreach ($files as $file) {
 				include_once($file);
-				$key = $sensor->sensor_name;
-				$sensors[$key]['name'] = $key;
-				$sensors[$key]['status'] = $sensor->read();
-				$sensors[$key]['type'] = $sensor->sensor_class;
-				
-				$status_file = STATUSDATA.$sensor->sensor_name.'.status';
-				if (is_file($status_file))
-					$last_status_data = file_get_contents($status_file);
-				else
-					$last_status_data = '-';
-				$current_status_data = $sensor->read();
-				if ($current_status_data != $last_status_data) {
-					file_put_contents($status_file, $current_status_data);
-					$last_change = time();
-				}
+// 				$key = $sensor->sensor_name;
+// 				$sensors[$key]['name'] = $key;
+// 				$sensors[$key]['status'] = $sensor->read();
+// 				$sensors[$key]['type'] = $sensor->sensor_class;
+// 				
+// 				$status_file = STATUSDATA.$sensor->sensor_name.'.status';
+// 				if (is_file($status_file))
+// 					$last_status_data = file_get_contents($status_file);
+// 				else
+// 					$last_status_data = '-';
+// 				$current_status_data = $sensor->read();
+// 				if ($current_status_data != $last_status_data) {
+// 					file_put_contents($status_file, $current_status_data);
+// 					$last_change = time();
+// 				}
 			}
 			
-			file_put_contents(ABSPATH.'/data/last.status', $last_change);
+// 			file_put_contents(ABSPATH.'/data/last.status', $last_change);
+			
+			if ($this->last_status_change > 0)
+				file_put_contents(ABSPATH.'/data/last.status', $this->last_status_change);
 		}
+	}
+	
+	function sensor_update($id, $current_status_data, $sensor_type, $options_type) {
+		$status_file = ABSPATH.'/data/status/'.$id.'.status';
+		$typeof_file = ABSPATH.'/data/types/'.$id.'.type';
 		
-// 		debugarr($sensors);
+		if (is_file($status_file))
+			$last_status_data = file_get_contents($status_file);
+		else
+			$last_status_data = UNKNOWN;
+		
+		if (!is_file($typeof_file))
+			file_put_contents($typeof_file, strtolower($sensor_type));
+		
+// 		echo $id,": ",$last_status_data," / ",$current_status_data," [",$sensor_type,"]<br>";
+		
+		if ($current_status_data != $last_status_data) {
+			file_put_contents($status_file, $current_status_data);
+			$this->last_status_change = time();
+		}
 	}
 	
 	function sensor_save($id, $name, $type) {
@@ -524,6 +547,7 @@ class clsRIFT3 {
 	
 	function ajax_get_last_data_as_json() {
 		$jsonArray['widgets'] = array();
+		$jsonArray['devices'] = array();
 		$jsonArray['sensors'] = array();
 		
 		if (count($this->widgets) > 0) {
@@ -558,6 +582,29 @@ class clsRIFT3 {
 			}
 		}
 		
+		if (count($this->devices) > 0) {
+			foreach ($this->devices as $key => $device) {
+// 				echo "<hr>",$key;
+// 				print_r($device);
+// 				echo "<br>";
+				
+				if (array_key_exists($key, $this->sensor_types))
+					$jsonArray['devices'][$key]['t'] = $this->sensor_types[$key];
+				else
+					$jsonArray['devices'][$key]['t'] = 'unknown';
+				$jsonArray['devices'][$key]['n'] = $device['name'];
+				if (array_key_exists($key, $this->sensor_status))
+					$jsonArray['devices'][$key]['v'] = $this->sensor_status[$key];
+				else
+					$jsonArray['devices'][$key]['v'] = UNKNOWN;
+				
+				if (array_key_exists($key, $this->sensor_changed))
+					$jsonArray['devices'][$key]['c'] = date('d.m.', $this->sensor_changed[$key])." ".date('H:i', $this->sensor_changed[$key]);
+				else
+					$jsonArray['devices'][$key]['c'] = '00.00. 00:00';
+			}
+		}
+		
 		foreach ($this->sensor_status as $key => $sensor_data) {
 			if (array_key_exists($key, $this->sensor_types))
 				$jsonArray['sensors'][$key]['t'] = $this->sensor_types[$key];
@@ -573,6 +620,7 @@ class clsRIFT3 {
 			$jsonArray['sensors'][$key]['c'] = date('d.m.', $this->sensor_changed[$key])." ".date('H:i', $this->sensor_changed[$key]);
 		}
 		
+		asort($jsonArray['devices']);
 		asort($jsonArray['sensors']);
 		
 // 		debugarr($jsonArray);

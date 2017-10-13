@@ -132,29 +132,33 @@ function updateUI() {
 	
 // 	widget_html = 'X:'+jsonObj['sensors'].length;
 	
-// 	if (jsonObj['widgets'].length > 0) {
-		for (var k in jsonObj['widgets']) {
-			widget_html += "<div class='widget-box'>";
-			widget_html += "<div class='widget-icon'><img src='res/img/switches/"+jsonObj['widgets'][k]['t']+"-"+jsonObj['widgets'][k]['v']+".png' width='56' height='56' alt='"+jsonObj['widgets'][k]['t']+"-"+jsonObj['widgets'][k]['v']+"'></div>";
-			widget_html += "<div class='widget-name'>"+jsonObj['widgets'][k]['n']+"</div>";
-			widget_html += "</div>";
-		}
-// 	}
-
-
+	for (var k in jsonObj['widgets']) {
+		widget_html += "<div class='widget-box'>";
+		widget_html += "<div class='widget-icon'><img src='res/img/switches/"+jsonObj['widgets'][k]['t']+"-"+jsonObj['widgets'][k]['v']+".png' width='56' height='56' alt='"+jsonObj['widgets'][k]['t']+"-"+jsonObj['widgets'][k]['v']+"'></div>";
+		widget_html += "<div class='widget-name'>"+jsonObj['widgets'][k]['n']+"</div>";
+		widget_html += "</div>";
+	}
+	
+	for (var k in jsonObj['devices']) {
+		switch_html += "<div class='switch-box hand' id='switch-"+k+"' onclick='return rift_switch.toggle(\""+k+"\", \""+jsonObj['devices'][k]['t']+"\");'>";
+		switch_html += "<div class='switch-icon'><img id='switch-"+k+"-icon' data-state='"+jsonObj['devices'][k]['v']+"' src='res/img/switches/"+jsonObj['devices'][k]['t']+"-"+jsonObj['devices'][k]['v']+".png' width='32' height='32' alt='"+jsonObj['devices'][k]['t']+"'></div>";
+		switch_html += "<div class='switch-name'>"+jsonObj['devices'][k]['n']+"</div>";
+		switch_html += "<div class='switch-time'>"+jsonObj['devices'][k]['c']+"</div>";
+		switch_html += "</div>";
+	}
 	
 // 	sensor_html += "<div class='log-container'>";
 	for (var k in jsonObj['sensors']) {
-		switch (jsonObj['sensors'][k]['t']) {
-			//case 'computer':
-			case 'light':
-				switch_html += "<div class='switch-box hand' id='switch-"+k+"' onclick='return rift_switch.toggle(\""+k+"\", \""+jsonObj['sensors'][k]['t']+"\");'>";
-				switch_html += "<div class='switch-icon'><img id='switch-"+k+"-icon' data-state='"+jsonObj['sensors'][k]['v']+"' src='res/img/switches/"+jsonObj['sensors'][k]['t']+"-"+jsonObj['sensors'][k]['v']+".png' width='32' height='32' alt='"+jsonObj['sensors'][k]['t']+"'></div>";
-				switch_html += "<div class='switch-name'>"+jsonObj['sensors'][k]['n']+"</div>";
-				switch_html += "<div class='switch-time'>"+jsonObj['sensors'][k]['c']+"</div>";
-				switch_html += "</div>";
-				break;
-		}
+// 		switch (jsonObj['sensors'][k]['t']) {
+// 			//case 'computer':
+// 			case 'light':
+// 				switch_html += "<div class='switch-box hand' id='switch-"+k+"' onclick='return rift_switch.toggle(\""+k+"\", \""+jsonObj['sensors'][k]['t']+"\");'>";
+// 				switch_html += "<div class='switch-icon'><img id='switch-"+k+"-icon' data-state='"+jsonObj['sensors'][k]['v']+"' src='res/img/switches/"+jsonObj['sensors'][k]['t']+"-"+jsonObj['sensors'][k]['v']+".png' width='32' height='32' alt='"+jsonObj['sensors'][k]['t']+"'></div>";
+// 				switch_html += "<div class='switch-name'>"+jsonObj['sensors'][k]['n']+"</div>";
+// 				switch_html += "<div class='switch-time'>"+jsonObj['sensors'][k]['c']+"</div>";
+// 				switch_html += "</div>";
+// 				break;
+// 		}
 		
 		sensor_html += "<div class='sensor-box' id='sensor-"+k+"' onclick='return sensor.show(\""+k+"\", \""+jsonObj['sensors'][k]['n']+"\", \""+jsonObj['sensors'][k]['t']+"\");'>";
 		sensor_html += "<div class='sensor-icon'><img src='res/img/types/"+jsonObj['sensors'][k]['t']+".png' width='32' height='32' alt='"+jsonObj['sensors'][k]['t']+"'></div>";
