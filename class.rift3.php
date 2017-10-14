@@ -31,7 +31,7 @@ class clsRIFT3 {
 		$this->receipes = array();
 		$this->widgets = array();
 		
-		$this->widgets = array('ESP-LIGHT','IFTTT-Weather','ESP-TEMP','Time','PC','TV','ESP-ROBBY');
+		$this->widgets = array('ESP-LIGHT','IFTTT-Weather','ESP-TEMP','Time','PC','TV','Bastelkiste','ESP-ROBBY');
 	}
 	
 // 	function __destruct() {
@@ -384,7 +384,7 @@ class clsRIFT3 {
 		}
 	}
 	
-	function action_run($device_id, $action, $receipe_name = '') {
+	function action_run($device_id, $action, $receipe_name = '', $debug = false) {
 		if (isset($this->devices[$device_id]['type']))
 			$device_type = $this->devices[$device_id]['type'];
 		else
@@ -402,14 +402,16 @@ class clsRIFT3 {
 		else
 			$device_off_param = OFF;
 		
-// 		echo "receipe_name: ",$receipe_name,"<br>";
-// 		echo "device_id: ",$device_id,"<br>";
-// 		echo "action: ",$action,"<br>";
-// 		echo "devicename: ",$device_name,"<br>";
-// 		echo "device_type: ",$device_type,"<br>";
-// 		echo "on_param: ",$device_on_param,"<br>";
-// 		echo "off_param: ",$device_off_param,"<br>";
-// 		echo "<hr>";
+		if ($debug == true) {
+			echo "receipe_name: ",$receipe_name,"<br>";
+			echo "device_id: ",$device_id,"<br>";
+			echo "action: ",$action,"<br>";
+			echo "devicename: ",$device_name,"<br>";
+			echo "device_type: ",$device_type,"<br>";
+			echo "on_param: ",$device_on_param,"<br>";
+			echo "off_param: ",$device_off_param,"<br>";
+			echo "<hr>";
+		}
 		
 		switch ($device_type) {
 			case 'mailsender':
@@ -424,8 +426,10 @@ class clsRIFT3 {
 			call_user_func($device_type, $device_on_param, $device_off_param, $action);
 			$this->status_save($device_id, $action);
 		}
-		else
-			echo "function [",$device_type,"] not found <br>\r\n";
+		else {
+			if ($debug == true)
+				echo "function [",$device_type,"] not found <br>\r\n";
+		}
 	}
 	
 	function receipe_readall() {
@@ -525,14 +529,13 @@ class clsRIFT3 {
 					foreach ($receipe['actions'] as $actionname => $actionparam) {
 						if ($debug == true)
 							echo "run action ",$actionname," :: ",$actionparam," (",$rkey,")<br>";
-						else
-							$this->action_run($actionname, $actionparam, $rkey);
+						$this->action_run($actionname, $actionparam, $rkey, $debug);
 					}
 					$execute_counter++;
 				}
 				else {
 					if ($debug == true)
-						echo "not all trigger matching (",$run_trigger,"/",$num_trigger,")<br>";
+						echo $rkey,": not all trigger matching (",$run_trigger,"/",$num_trigger,")<br>";
 				}
 			}
 		}
