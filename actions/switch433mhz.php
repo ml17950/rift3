@@ -20,4 +20,6 @@
 				break;
 		}
 	}
+	
+	$this->action_register('433MHzSwitch', 'switch433mhz', '');
 ?>

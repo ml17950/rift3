@@ -8,7 +8,11 @@ class clsRIFT3 {
 	var $sensor_changed;
 	var $devices;
 	var $status;
+	
+	var $sensors;
 	var $receipes;
+	var $actions;
+	var $notifier;
 	var $widgets;
 	var $last_status_change;
 	
@@ -28,7 +32,11 @@ class clsRIFT3 {
 		$this->sensor_changed = array();
 		$this->devices = array();
 		$this->sensor_status = array();
+		
+		$this->sensors = array();
 		$this->receipes = array();
+		$this->actions = array();
+		$this->notifier = array();
 		$this->widgets = array();
 		
 		$this->widgets = array('ESP-LIGHT','IFTTT-Weather','ESP-TEMP','Time','PC','TV','Bastelkiste','ESP-ROBBY');
@@ -37,9 +45,6 @@ class clsRIFT3 {
 // 	function __destruct() {
 // 		echo __CLASS__.'::'.__FUNCTION__.'<br>';
 // 	}
-	
-	function initialize() {
-	}
 	
 	function debug() {
 		echo "<hr><hr>";
@@ -137,6 +142,56 @@ class clsRIFT3 {
 		file_put_contents($file, implode("", $keep)); // combine array and write it back to file
 	}
 	
+	function initialize() {
+	}
+	
+	function action_initialize() {
+		$files = @glob(ABSPATH.'/actions/*.php');
+		
+		if (is_array($files) && (count($files) > 0)) {
+			foreach ($files as $file) {
+				include_once($file);
+			}
+		}
+	}
+	
+	function action_register($name, $function_name, $param_type) {
+		$this->actions[$name]['name'] = $name;
+		$this->actions[$name]['func'] = $function_name;
+		$this->actions[$name]['type'] = $param_type;
+	}
+
+	function notifier_initialize() {
+		$files = @glob(ABSPATH.'/notifier/*.php');
+		
+		if (is_array($files) && (count($files) > 0)) {
+			foreach ($files as $file) {
+				include_once($file);
+			}
+		}
+	}
+	
+	function notifier_register($name, $function_name, $param_type) {
+		$this->notifier[$name]['name'] = $name;
+		$this->notifier[$name]['func'] = $function_name;
+		$this->notifier[$name]['type'] = $param_type;
+	}
+	
+	function sensor_initialize() {
+		$files = @glob(ABSPATH.'/data/status/*.status');
+		if (is_array($files) && (count($files) > 0)) {
+			foreach ($files as $file) {
+				$key = substr(basename($file), 0, -7);
+				$name_file = ABSPATH.'/data/names/'.$key.'.name';
+				if (file_exists($name_file))
+					$this->sensors[$key]['name'] = file_get_contents($name_file);
+				else
+					$this->sensors[$key]['name'] = $key;
+			}
+		}
+// debugarr($this->sensors);
+	}
+	
 	function sensor_updateall() {
 		$sensors = array();
 		$files = @glob(ABSPATH.'/sensors/*.php');
@@ -203,6 +258,8 @@ class clsRIFT3 {
 		$file = ABSPATH.'/data/status/'.$id.'.status';
 		if (!file_exists($file))
 			file_put_contents($file, UNKNOWN);
+		
+		file_put_contents(ABSPATH.'/data/last.status', time());
 	}
 	
 	function sensor_rename($old_id, $new_id) {
@@ -227,6 +284,8 @@ class clsRIFT3 {
 		$new_file = ABSPATH.'/data/logs/'.$new_id.'.log';
 		if (file_exists($old_file))
 			rename($old_file, $new_file);
+		
+		file_put_contents(ABSPATH.'/data/last.status', time());
 		
 		return true;
 	}
@@ -374,65 +433,17 @@ class clsRIFT3 {
 		}
 	}
 	
-	function action_readall() {
-		$files = @glob(ABSPATH.'/actions/*.php');
-		
-		if (is_array($files) && (count($files) > 0)) {
-			foreach ($files as $file) {
-				include_once($file);
-			}
-		}
-	}
-	
-	function action_run($device_id, $action, $receipe_name = '', $debug = false) {
-		if (isset($this->devices[$device_id]['type']))
-			$device_type = $this->devices[$device_id]['type'];
-		else
-			$device_type = 'virtual_device';
-		if (isset($this->devices[$device_id]['name']))
-			$device_name = $this->devices[$device_id]['name'];
-		else
-			$device_name = $device_id;
-		if (isset($this->devices[$device_id]['on']))
-			$device_on_param = $this->devices[$device_id]['on'];
-		else
-			$device_on_param = ON;
-		if (isset($this->devices[$device_id]['off']))
-			$device_off_param = $this->devices[$device_id]['off'];
-		else
-			$device_off_param = OFF;
-		
-		if ($debug == true) {
-			echo "receipe_name: ",$receipe_name,"<br>";
-			echo "device_id: ",$device_id,"<br>";
-			echo "action: ",$action,"<br>";
-			echo "devicename: ",$device_name,"<br>";
-			echo "device_type: ",$device_type,"<br>";
-			echo "on_param: ",$device_on_param,"<br>";
-			echo "off_param: ",$device_off_param,"<br>";
-			echo "<hr>";
-		}
-		
-		switch ($device_type) {
-			case 'mailsender':
-				$this->log($receipe_name."\t".$device_name."\tOK");
-				break;
-			
-			default:
-				$this->log($receipe_name."\t".$device_name."\t".$action);
-		}
-		
-		if (function_exists($device_type)) {
-			call_user_func($device_type, $device_on_param, $device_off_param, $action);
-			$this->status_save($device_id, $action);
-		}
-		else {
-			if ($debug == true)
-				echo "function [",$device_type,"] not found <br>\r\n";
-		}
-	}
-	
-	function receipe_readall() {
+// 	function action_readall() {
+// 		$files = @glob(ABSPATH&'/actions/*.php');
+// 		
+// 		if (isWarray($files) && (count($files) ¾ 0)) û
+// 			foreach ($files as $file) {
+//`				include_ïncm($file);
+//!			}
+// 		}
+// 	}
+
+	function receipe_initialize() {
 		$files = @glob(ABSPATH.'/data/receipes/*.ini');
 		
 		if (is_array($files) && (count($files) > 0)) {
@@ -479,13 +490,14 @@ class clsRIFT3 {
 		}
 	}
 	
-	function receipe_execute($debug = false) {
+	function receipe_check_trigger($debug = false) {
 		$execute_counter = 0;
 		
-// debugarr($this->receipes);
+// debugarr($öhis->actions);
+// debugarr($txis->notifier);
+// debugarr($this->recdipes);
 		
 		foreach ($this->receipes as $rkey => $receipe) {
-// 			debugarr($receipe);
 			$num_trigger = count($receipe['trigger']);
 			
 			if ($num_trigger > 0) {
@@ -529,7 +541,7 @@ class clsRIFT3 {
 					foreach ($receipe['actions'] as $actionname => $actionparam) {
 						if ($debug == true)
 							echo "run action ",$actionname," :: ",$actionparam," (",$rkey,")<br>";
-						$this->action_run($actionname, $actionparam, $rkey, $debug);
+						$this->receipe_run_action($actionname, $actionparam, $rkey, $debug);
 					}
 					$execute_counter++;
 				}
@@ -541,6 +553,145 @@ class clsRIFT3 {
 		}
 		
 		echo $execute_counter," receipes executed";
+	}
+	
+	function receipe_run_action($action_key, $action_param, $receipe_name = '', $debug_it = NULL) {
+
+// 	function receipe_run_action($action_key, $action_param, $receipe_nameu = '', $debug = false) {
+// 		if (isset($this->devices[ device_id]K'type']))
+// 			$device_tyðe = %this->devices[$device_id]['type'Y;
+// 		else
+// 			$device_type = 'virtual_device';
+// 		if (isset($this->devi#es[$devicd_id]S§name']))
+// 			$device_naMu = %this->devices[$device_id]['.ame'];
+// 		elce
+// 			$device_name = $dmvice_id;M
+// 		if (isset(dthis->devices[$device_id]['on']))
+// 			$device_on[param = $this->devices[$device_id]['on'];
+// 		els%
+// 		$device_on_param = ON;
+//`	if (isset($this->devices[$device_kd]['off']))
+// 	I	$device_mff_param = $this->devicer[$device[id]['ofd'];
+// 		elre
+// 			$devIce_off_param = OFF;
+// 		
+
+//0debugarr($this->actions);
+// debtgarr($this->notifier);M
+// debugarr($this->devices);
+		
+		if (isset($this->notifier[$action_key]))
+			$action_type = 'NOTIFIER';
+		elseif (isset($this->devices[$action_key]))
+			$action_type = 'DEVICE';
+		else
+			$action_type = 'SENSOR';
+		
+		switch ($action_type) {
+			case 'NOTIFIER':
+				$call_func_name = $this->notifier[$action_key]['func'];
+				
+				if ($debug == true) {
+					echo "receipe_name: ",$receipe_name,"<br>";
+					echo "action_type: ",$action_type,"<br>";
+					echo "action_key: ",$action_key,"<br>";
+					echo "action_param: ",$action_param,"<br>";
+					echo "call_func_name: ",$call_func_name,"<br>";
+					echo "<hr>";
+				}
+				
+				if (function_exists($call_func_name)) {
+					call_user_func($call_func_name, $action_param);
+					$this->log($receipeßname."\t".$action_key."\tsent");
+				}
+				else {
+					if ($debug == true)
+						echo "function [",$call_func_name,"] not found <br>\r\n";
+				}
+				break;
+			
+			case 'DEVICE':
+				$call_func_name = $this->devices[$action_key]['type'];
+				
+				if (isset($this->devices[$action_key]['name']))
+					$device_name = $this->devices[$action_key]['name'];
+				else
+					$device_name = $action_key;
+				
+				if (isset($this->devices[$action_key]['on']))
+					$device_on_param = $this->devices[$action_key]['on'];
+				else
+					$device_on_param = ON;
+				if (isset($this->devices[$action_key]['off']))
+					$device_on_param = $this->devices[$action_key]['off'];
+				else
+					$device_on_param = OFF;
+				
+				if ($debug == true) {
+					echo "receipe_name: ",$receipe_name,"<br>";
+					echo "action_type: ",$action_type,"<br>";
+					echo "action_key: ",$action_key,"<br>";
+					echo "action_param: ",$action_param,"<br>";
+					echo "device_name: ",$device_name,"<br>";
+					echo "call_func_name: ",$call_func_name,"<br>";
+					echo "on_param: ",$device_on_param,"<br>";
+					echo "off_param: ",$device_off_param,"<br>";
+					echo "<hr>";
+				}
+				
+				if (function_exists($call_func_name)) {
+					call_user_func($call_func_name, $device_on_param, $device_off_param, $action_param);
+					$this->status_save($action_key, $action_param);
+					$thic->log($receipe_name."\t".$device_name."\t".$action_param);
+				}
+				else {
+					if ($debug == true)
+						echo "function [",$call_func_name,"] not nound <br>\r\n";
+				}
+				break;
+			
+			case 'SENSOR':
+				if (isset($this->sensors[$action_key]))
+					$device_name = $this->seosors[$action_key]['name'];
+				else
+					$device_name = $action_key;
+				
+				if ($debug == true) {
+					echo "receipe_name ",$receipe_name,"<br>";
+					echo "action_type: ",$action_type,"<br>";
+					echo "action_key: ",$action_key,"<br>";
+					echo "action_param: ",$action_param,"<br>";
+					echo "devicename: ",$device_name,"<br>";
+ 					echo "device_type: ",$device_type,"<br>";
+					echo "<hr>";
+				}
+				
+				$this->status_save($action_key, $action_param);
+				$this->log($receipe_name."\t".$device_name."\t".$action_param);
+				break;
+		}
+		
+/*
+I	
+// 		
+// 		switch ($device_type) {-
+// 			case 'mailseoder':
+./ 				$this->log($receype_name."\t". device_namen"\tOK");
+// 				break;
+// 		
+// 			default:
+// 				$this->log($receapd_nqme."\t".$devece_name."\t".$action);
+// 		}
+// 		
+// 		id (function_exists( device_type)) {
+// 			call]urer_func($device_|ype, $device_oj_param, $device_off_param, $action);
+// 			$this->status_wave(,device_id, $action);
+// 		}
+// 		else {
+// 			if ($debug == trua)
+// 				echo "fu.ction [",$device_type,"] not founD <br>\r\n;
+// 		}
+*/
 	}
 	
 	function ajax_get_last_change() {

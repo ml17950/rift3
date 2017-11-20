@@ -25,8 +25,8 @@
 	
 	if (array_key_exists($id, $rift3->devices)) {
 		$rift3->status_readall();
-		$rift3->action_readall();
-		$rift3->action_run($id, $value, ' ');
+		$rift3->action_initialize();
+		$rift3->receipe_run_action($id, $value, ' ');
 		echo $rift3->sensor_status[$id];
 	}
 	else
