@@ -24,5 +24,5 @@
 	
 	date_default_timezone_set('Europe/Berlin');
 	
-
+	define('UI_LANGUAGE', 'de');
 ?>

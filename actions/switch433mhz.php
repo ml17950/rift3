@@ -5,7 +5,8 @@
 				//$cmd = 'send 00001 1 1';
 				$cmd = 'send '.$on_param;
 				$output = array();
-				for ($i=1; $i<=2; $i++) {
+				//error_log($cmd);
+				for ($i=1; $i<=3; $i++) {
 					@exec($cmd, $output, $retval);
 				}
 				break;
@@ -14,7 +15,8 @@
 				//$cmd = 'send 00001 1 0';
 				$cmd = 'send '.$off_param;
 				$output = array();
-				for ($i=1; $i<=2; $i++) {
+				//error_log($cmd);
+				for ($i=1; $i<=3; $i++) {
 					@exec($cmd, $output, $retval);
 				}
 				break;
