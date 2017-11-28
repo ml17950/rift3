@@ -6,4 +6,5 @@
 	
 	define('TXTLOG', 'Ereignisse');
 	define('TXTRECEIPES', 'Rezepte');
+	define('TXTSENSORS', 'Sensoren');
 ?>

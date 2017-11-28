@@ -96,3 +96,47 @@ border: 1px solid orange;
 			text-align: center;
 			padding: 4px 0;
 		}
+
+.receipes-container {
+}
+	.receipe-box {
+		background-color: #1E2023;
+		border: 1px solid #434343;
+		border-radius: 5px;
+		color: #aaaaaa;
+		margin: 10px;
+		cursor: pointer;
+	}
+		.receipe-logo {
+		}
+		.receipe-title {
+			border-bottom: 1px solid #434343;
+			font-size: 2.5em;
+			padding: 10px;
+		}
+		.receipe-meta {
+			background-color: #181A1C;
+			color: #dfdfdf;
+			padding: 10px;
+			border-radius: 5px;
+			
+			display: flex;
+			justify-content: space-between;
+		}
+			.receipe-status {
+				flex: 0 1 auto;
+				border-radius: 5px;
+				padding: 3px;
+			}
+				.receipe-status-circle {
+					display: inline-block;
+					width: 10px;
+					height: 10px;
+					border: 2px solid white;
+					border-radius: 10px;
+					margin-right: 5px;
+				}
+			.receipe-time {
+				flex: 0 1 auto;
+				padding: 3px;
+			}

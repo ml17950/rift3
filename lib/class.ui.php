@@ -3,6 +3,7 @@ class clsUserInterface {
 	var $rift3;
 	var $log;
 	var $receipes;
+	var $sensors;
 	
 	function __construct() {
 		//echo __CLASS__.'::'.__FUNCTION__.'<br>';
@@ -17,6 +18,9 @@ class clsUserInterface {
 		
 		include_once('lib/subclass.ui.receipes.php');
 		$this->receipes = new clsReceipeInterface($this->rift3);
+		
+		include_once('lib/subclass.ui.sensors.php');
+		$this->sensors = new clsSensorInterface($this->rift3);
 	}
 	
 	function __destruct() {
@@ -61,7 +65,7 @@ class clsUserInterface {
 // 		echo "	<!--<a href='#' onclick='return getConfig();'><img src='res/img/config.png' border='0' width='48' height='48' hspace='3'></a>-->";
 		echo "	<a href='log.php'><img src='res/img/log.png' border='0' width='46' height='46' hspace='3'></a>";
 		echo "	<a href='receipes.php'><img src='res/img/receipes.png' border='0' width='46' height='46' hspace='3'></a>";
-		echo "	<a href='#' onclick='return displaySensors();'><img src='res/img/sensors.png' border='0' width='46' height='46' hspace='3'></a>";
+		echo "	<a href='sensors.php' onclick='return displaySensors();'><img src='res/img/sensors.png' border='0' width='46' height='46' hspace='3'></a>";
 		echo "	<a href='#' onclick='return displaySwitches();'><img src='res/img/switches.png' border='0' width='46' height='46' hspace='3'></a>";
 		echo "</div>";
 	}
