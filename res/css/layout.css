@@ -1,0 +1,98 @@
+body {
+	background: #808080;
+	padding: 0;
+	margin: 0;
+	font-family: "Source Sans Pro","Helvetica Neue",Helvetica,Arial,sans-serif;
+	font-size: 14px;
+	/*font-family: "Droid Sans", "Helvetica", "Arial", sans-serif;
+	font-size: 10pt;*/
+}
+
+h1 {
+	display: block;
+	background: black;
+	color: #aa6900;
+	text-align: center;
+	font-size: 1.3em;
+	padding: 5px;
+	margin: 0;
+}
+
+#navigation {
+	position: fixed;
+	bottom: 0px;
+	left: 0px;
+	width: 100vw;
+	height: 50px;
+	background: black;
+	color: white;
+
+	display: -webkit-flex;
+	display: flex;
+	-webkit-flex-direction: row;
+	flex-direction: row;
+	-webkit-flex-wrap: nowrap;
+	flex-wrap: nowrap;
+	align-items: center;
+	justify-content: space-around;
+}
+	#navigation a {
+		flex: 0 0 50px;
+		width: 50px;
+	}
+
+#content {
+	background: #333;
+	max-width: 400px;
+	width: 100vw;
+	margin: 0 auto 60px auto;
+}
+
+.debug { background: white; border: 1px solid red; padding: 10px; margin: 20px; }
+.hand { cursor: pointer; }
+.is-hidden { display: none; }
+.is-on  { background: #31a054; color: white; }
+.is-off { background: #98272a; color: white; }
+.is-val { background: #6092ed; color: white; }
+
+/*
+border: 1px solid orange;
+*/
+
+.log-container {
+}
+	.log-box {
+		display: -webkit-flex;
+		display: flex;
+		-webkit-flex-direction: row;
+		flex-direction: row;
+		-webkit-flex-wrap: nowrap;
+		flex-wrap: nowrap;
+		align-items: center;
+		
+		background: #262626;
+		color: #aaaaaa;
+		font-size: 0.9em;
+		padding: 3px 0;
+	}
+	.log-box:nth-of-type(even) {
+		background: #2a2a2a;
+	}
+		.log-client {
+			flex: 0 0 25px;
+			text-align: center;
+		}
+		.log-time {
+			flex: 0 0 60px; /* 95px */
+		}
+		.log-trigger {
+			flex: 1;
+		}
+		.log-action {
+			flex: 1;
+		}
+		.log-value {
+			flex: 0 0 40px;
+			text-align: center;
+			padding: 4px 0;
+		}

@@ -30,7 +30,7 @@ class clsRIFT3 {
 	}
 	
 	function log($msg) {
-		file_put_contents(ABSPATH.'/data/rift3.log', date('d.m. H:i:s')."\t".CLIENT."\t".$msg."\r\n", FILE_APPEND);
+		file_put_contents(ABSPATH.'/data/rift3.log', date('d.m.y H:i:s')."\t".CLIENT."\t".$msg."\r\n", FILE_APPEND);
 	}
 	
 	function log_resize($num_of_lines = 100) {

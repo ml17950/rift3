@@ -132,7 +132,7 @@ class clsRIFT3 {
 	}
 	
 	function log($msg) {
-		file_put_contents(ABSPATH.'/data/rift3.log', date('d.m. H:i:s')."\t".CLIENT."\t".$msg."\r\n", FILE_APPEND);
+		file_put_contents(ABSPATH.'/data/rift3.log', date('d.m.y H:i:s')."\t".CLIENT."\t".$msg."\r\n", FILE_APPEND);
 	}
 	
 	function log_resize($num_of_lines = 100) {
@@ -541,7 +541,7 @@ class clsRIFT3 {
 					foreach ($receipe['actions'] as $actionname => $actionparam) {
 						if ($debug == true)
 							echo "run action ",$actionname," :: ",$actionparam," (",$rkey,")<br>";
-						$this->receipe_run_action($actionname, $actionparam, $rkey, $debug);
+						$this->receipe_run_action($actionname, $actionparam, $rkey);
 					}
 					$execute_counter++;
 				}
@@ -555,8 +555,9 @@ class clsRIFT3 {
 		echo $execute_counter," receipes executed";
 	}
 	
-	function receipe_run_action($action_key, $action_param, $receipe_name = '', $debug_it = NULL) {
-
+	function receipe_run_action($action_key, $action_param, $receipe_name = '') {
+		$debug = false;
+		
 // 	function receipe_run_action($action_key, $action_param, $receipe_nameu = '', $debug = false) {
 // 		if (isset($this->devices[ device_id]K'type']))
 // 			$device_tyðe = %this->devices[$device_id]['type'Y;
@@ -623,9 +624,9 @@ class clsRIFT3 {
 				else
 					$device_on_param = ON;
 				if (isset($this->devices[$action_key]['off']))
-					$device_on_param = $this->devices[$action_key]['off'];
+					$device_off_param = $this->devices[$action_key]['off'];
 				else
-					$device_on_param = OFF;
+					$device_off_param = OFF;
 				
 				if ($debug == true) {
 					echo "receipe_name: ",$receipe_name,"<br>";
@@ -642,7 +643,7 @@ class clsRIFT3 {
 				if (function_exists($call_func_name)) {
 					call_user_func($call_func_name, $device_on_param, $device_off_param, $action_param);
 					$this->status_save($action_key, $action_param);
-					$thic->log($receipe_name."\t".$device_name."\t".$action_param);
+					$this->log($receipe_name."\t".$device_name."\t".$action_param);
 				}
 				else {
 					if ($debug == true)

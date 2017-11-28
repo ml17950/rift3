@@ -38,7 +38,7 @@ class clsUserInterface {
 		echo "	<link href='touch-icon.png' type='image/png' rel='shortcut icon'>";
 		echo "	<link href='touch-icon.png' rel='apple-touch-icon'>";
 		echo "	<title>R.I.F.T.3</title>";
-		echo "	<link rel='stylesheet' type='text/css' href='res/css/style-dev-4g.css?20171120a'>";
+		echo "	<link rel='stylesheet' type='text/css' href='res/css/layout.css'>";
 		echo "	<script type='text/javascript' src='res/js/jquery-1.11.3.min.js'></script>";
 // 		echo "	<script type='text/javascript' src='main.js?20171012-2'></script>";
 		echo "</head>";

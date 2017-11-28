@@ -171,9 +171,47 @@ h1 {
 		}
 
 .receipes-container {
-	border: 1px solid #808080;
 	margin: 5px;
 }
+	.receipe-box {
+		background-color: #1E2023;
+		border-radius: 5px;
+		color: white;
+		margin: 10px 0;
+		cursor: pointer;
+	}
+		.receipe-logo {
+		}
+		.receipe-title {
+			font-size: 3em;
+			padding: 10px;
+		}
+		.receipe-meta {
+			background-color: #181A1C;
+			color: #dfdfdf;
+			padding: 10px;
+			border-radius: 5px;
+			
+			display: flex;
+			justify-content: space-between;
+		}
+			.receipe-status {
+				flex: 0 1 auto;
+				border-radius: 5px;
+				padding: 3px;
+			}
+				.receipe-status-circle {
+					display: inline-block;
+					width: 10px;
+					height: 10px;
+					border: 2px solid white;
+					border-radius: 10px;
+					margin-right: 5px;
+				}
+			.receipe-time {
+				flex: 0 1 auto;
+				padding: 3px;
+			}
 
 .log-container {
 	border: 1px solid #808080;
@@ -292,6 +330,12 @@ h1 {
 	padding: 10px;
 	text-align: center;
 }
+
+.flex-row { display: flex; flex-flow: row wrap; margin: 5px 0; border: 1px solid #dfdfdf; padding: 3px; }
+.flex-name { flex: 2; }
+.flex-text { flex: 3; }
+.flex-option { flex: 1; }
+.flex-select { flex: 3; }
 
 .debug { background: white; border: 1px solid red; padding: 10px; margin: 20px; }
 .hand { cursor: pointer; }
