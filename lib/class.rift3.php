@@ -6,6 +6,7 @@ class clsRIFT3 {
 	var $receipes;
 	var $actions;
 	var $notifier;
+	var $widgets;
 	var $last_status_change;
 	
 	function __construct() {
@@ -16,6 +17,7 @@ class clsRIFT3 {
 		$this->receipes = array();
 		$this->actions = array();
 		$this->notifier = array();
+		$this->widgets = array();
 		
 		$this->last_status_change = 0;
 	}
@@ -248,6 +250,26 @@ echo $id,": ",$last_status_data," / ",$current_status_data," [",$sensor_type,"] 
 			
 			ksort($this->receipes);
 		}
+	}
+	
+	function widgets_initialize() {
+		$widgets_file = ABSPATH.'/data/widgets.ser';
+
+		if (file_exists($widgets_file)) {
+			$serialized_data = file_get_contents($widgets_file);
+			$this->widgets = unserialize($serialized_data);
+		}
+
+		//$this->widgets_save();
+	}
+	
+	function widgets_save() {
+		$widgets_file = ABSPATH.'/data/widgets.ser';
+		
+		$arr = array('ESP-LIGHT','IFTTT-Weather','ESP-TEMP','Time','TV','PC','Bastelkiste','ESP-ROBBY');
+		
+		$serialized_data = serialize($arr);
+		file_put_contents($widgets_file, $serialized_data);
 	}
 }
 ?>

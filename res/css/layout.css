@@ -108,7 +108,7 @@ border: 1px solid orange;
 		background-color: #1E2023;
 		border: 1px solid #555;
 		border-radius: 5px;
-		color: #aaaaaa;
+		color: #dfdfdf;
 		margin: 10px;
 		cursor: pointer;
 	}
@@ -183,6 +183,83 @@ border: 1px solid orange;
 			line-height: 36px;
 		}
 
+.widget-container {
+	border-bottom: 3px double #555;
+	padding-bottom: 5px;
+	margin-bottom: 5px;
+	
+	display: -webkit-flex;
+	display: flex;
+	-webkit-flex-direction: row;
+	flex-direction: row;
+	-webkit-flex-wrap: wrap;
+	flex-wrap: wrap;
+	-webkit-justify-content: space-around;
+    justify-content: space-around;
+}
+	.widget-box {
+		flex: 0 0 80px;
+		border: 1px solid #555;
+		border-radius: 5px;
+		color: #dfdfdf;
+		margin: 5px 0;
+	}
+		.widget-icon {
+			background: linear-gradient(to bottom, #393939 0%,#181A1C 100%);
+			border-top-left-radius: 5px;
+			border-top-right-radius: 5px;
+			padding: 2px 0;
+			text-align: center;
+		}
+		.widget-name {
+			background: linear-gradient(to bottom, #2e2e2e 0%,#000000 100%);
+			border-top: 1px solid #434343;
+			border-bottom-right-radius: 5px;
+			border-bottom-left-radius: 5px;
+			padding: 2px 0;
+			text-align: center;
+		}
 
-
-
+.switch-container {
+	display: -webkit-flex;
+	display: flex;
+	-webkit-flex-direction: row;
+	flex-direction: row;
+	-webkit-flex-wrap: wrap;
+	flex-wrap: wrap;
+	-webkit-justify-content: space-around;
+    justify-content: space-around;
+}
+	.switch-box {
+		flex: 0 1 45%;
+		background: linear-gradient(to bottom, #393939 0%,#181A1C 100%);
+		border: 1px solid #555;
+		border-radius: 5px;
+		color: #dfdfdf;
+		cursor: pointer;
+		margin: 6px 0;
+		
+		display: -webkit-flex;
+		display: flex;
+		-webkit-flex-direction: row;
+		flex-direction: row;
+		-webkit-flex-wrap: wrap;
+		flex-wrap: wrap;
+		align-items: center;
+	}
+		.switch-icon {
+			flex: 0 0 48px;
+			padding: 3px;
+		}
+		.switch-name {
+			font-size: 1.3em;
+			padding: 0 2px 0 5px;
+			flex: 1;
+		}
+		.switch-time {
+			border-top: 1px solid #434343;
+			flex: 0 0 100%;
+			font-size: 0.7em;
+			padding: 2px 0;
+			text-align: center;
+		}

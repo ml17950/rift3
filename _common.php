@@ -1,4 +1,5 @@
 <?php
+// last change: 2017-11-19
 	function param($key, $dflt = '') {
 		if (isset($_GET[$key]) && ($_GET[$key] != ''))
 			return trim($_GET[$key]);

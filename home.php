@@ -7,7 +7,7 @@
 	$ui = new clsUserInterface();
 	
 	$ui->meta();
-	$ui->header();
+	$ui->header(TXTHOME);
 	$ui->navigation();
 	$ui->home->display_widgets();
 	$ui->home->display_switches();
