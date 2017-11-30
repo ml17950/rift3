@@ -1,4 +1,5 @@
 <?php
+// last change: 2017-11-30
 class clsRIFT3 {
 	
 	var $sensors;
@@ -99,11 +100,16 @@ class clsRIFT3 {
 			foreach ($files as $file) {
 				$key = substr(basename($file), 0, -7);
 				$name_file = ABSPATH.'/data/names/'.$key.'.name';
+				$type_file = ABSPATH.'/data/types/'.$key.'.type';
+				
 				if (file_exists($name_file))
 					$this->sensors[$key]['name'] = file_get_contents($name_file);
 				else
 					$this->sensors[$key]['name'] = $key;
-				$this->sensors[$key]['type'] = UNKNOWN;
+				if (file_exists($type_file))
+					$this->sensors[$key]['type'] = file_get_contents($type_file);
+				else
+					$this->sensors[$key]['type'] = UNKNOWN;
 				$this->sensors[$key]['optt'] = UNKNOWN;
 				$this->sensors[$key]['value'] = file_get_contents($file);
 				$this->sensors[$key]['changed'] = filemtime($file);

@@ -1,5 +1,5 @@
 <?php
-// last change: 2017-11-20
+// last change: 2017-11-28
 class clsLogInterface {
 	var $rift3;
 

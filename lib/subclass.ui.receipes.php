@@ -1,4 +1,5 @@
 <?php
+// last change: 2017-11-23
 class clsReceipeInterface {
 	var $rift3;
 	

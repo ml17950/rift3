@@ -1,4 +1,5 @@
 <?php
+// last change: 2017-11-19
 	include_once('_config.php');
 	include_once('_common.php');
 	include_once('class.rift3.php');

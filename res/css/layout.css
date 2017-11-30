@@ -11,6 +11,7 @@ body {
 h1 {
 	display: block;
 	background: black;
+	border-bottom: 2px solid #434343;
 	color: #aa6900;
 	text-align: center;
 	font-size: 1.3em;
@@ -45,7 +46,8 @@ h1 {
 	background: #333;
 	max-width: 400px;
 	width: 100vw;
-	margin: 0 auto 60px auto;
+	margin: 0 auto 50px auto;
+	padding-bottom: 10px;
 }
 
 .debug { background: white; border: 1px solid red; padding: 10px; margin: 20px; }
@@ -54,6 +56,9 @@ h1 {
 .is-on  { background: #31a054; color: white; }
 .is-off { background: #98272a; color: white; }
 .is-val { background: #6092ed; color: white; }
+.is-just-updated { color: #31a054; }
+.is-today-updated { color: #aa6900; }
+
 
 /*
 border: 1px solid orange;
@@ -70,8 +75,8 @@ border: 1px solid orange;
 		flex-wrap: nowrap;
 		align-items: center;
 		
-		background: #262626;
-		color: #aaaaaa;
+		color: #dfdfdf;
+		border-bottom: 1px solid #555;
 		font-size: 0.9em;
 		padding: 3px 0;
 	}
@@ -92,16 +97,16 @@ border: 1px solid orange;
 			flex: 1;
 		}
 		.log-value {
-			flex: 0 0 40px;
+			flex: 0 0 50px;
 			text-align: center;
-			padding: 4px 0;
+			padding: 6px 0;
 		}
 
 .receipes-container {
 }
 	.receipe-box {
 		background-color: #1E2023;
-		border: 1px solid #434343;
+		border: 1px solid #555;
 		border-radius: 5px;
 		color: #aaaaaa;
 		margin: 10px;
@@ -110,12 +115,14 @@ border: 1px solid orange;
 		.receipe-logo {
 		}
 		.receipe-title {
+			background: linear-gradient(to bottom, #393939 0%,#181A1C 100%);
 			border-bottom: 1px solid #434343;
 			font-size: 2.5em;
 			padding: 10px;
 		}
 		.receipe-meta {
 			background-color: #181A1C;
+			/*background: linear-gradient(to bottom, #2e2e2e 0%,#000000 100%);*/
 			color: #dfdfdf;
 			padding: 10px;
 			border-radius: 5px;
@@ -140,3 +147,42 @@ border: 1px solid orange;
 				flex: 0 1 auto;
 				padding: 3px;
 			}
+
+.sensor-container {
+}
+	.sensor-box {
+		display: -webkit-flex;
+		display: flex;
+		-webkit-flex-direction: row;
+		flex-direction: row;
+		-webkit-flex-wrap: nowrap;
+		flex-wrap: nowrap;
+		align-items: center;
+		
+		color: #dfdfdf;
+		border-bottom: 1px solid #555;
+	}
+	.sensor-box:nth-of-type(even) {
+		background: #2a2a2a;
+	}
+		.sensor-icon {
+			flex: 0 0 40px;
+			text-align: left;
+			padding: 2px 5px;
+		}
+		.sensor-name {
+			flex: 1;
+		}
+		.sensor-time {
+			flex: 0 0 40px;
+			font-size: 0.8em;
+		}
+		.sensor-value {
+			flex: 0 0 50px;
+			text-align: center;
+			line-height: 36px;
+		}
+
+
+
+

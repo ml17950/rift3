@@ -39,7 +39,7 @@ class clsRIFT3 {
 		$this->notifier = array();
 		$this->widgets = array();
 		
-		$this->widgets = array('ESP-LIGHT','IFTTT-Weather','ESP-TEMP','Time','PC','TV','Bastelkiste','ESP-ROBBY');
+		$this->widgets = array('ESP-LIGHT','IFTTT-Weather','ESP-TEMP','Time','TV','PC','Bastelkiste','ESP-ROBBY');
 	}
 	
 // 	function __destruct() {
