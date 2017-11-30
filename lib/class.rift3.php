@@ -252,6 +252,34 @@ echo $id,": ",$last_status_data," / ",$current_status_data," [",$sensor_type,"] 
 		}
 	}
 	
+	function receipe_save(&$post) {
+		$file = ABSPATH.'/data/receipes/'.$post['id'].'.ini';
+
+		if ($post['new_name'] != $post['id']) {
+			unlink($file);
+			$file = ABSPATH.'/data/receipes/'.$post['new_name'].'.ini';
+		}
+
+		$data  = "[trigger]\r\n";
+		foreach ($post['trigger'] as $name => $value) {
+			if (!empty($value))
+				$data .= $name."=".$value."\r\n";
+		}
+		
+		$data .= "\r\n";
+		$data .= "[actions]\r\n";
+		foreach ($post['actions'] as $name => $value) {
+			if (!empty($value))
+				$data .= $name."=".$value."\r\n";
+		}
+		
+// 		debugarr($post);
+// 		echo nl2br($data);
+// 		echo "<hr>",$file,"<hr>";
+		
+		file_put_contents($file, $data);
+	}
+	
 	function widgets_initialize() {
 		$widgets_file = ABSPATH.'/data/widgets.ser';
 

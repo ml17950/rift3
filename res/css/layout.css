@@ -44,6 +44,7 @@ h1 {
 
 #content {
 	background: #333;
+	color: #dfdfdf;
 	max-width: 400px;
 	width: 100vw;
 	margin: 0 auto 50px auto;
@@ -59,6 +60,24 @@ h1 {
 .is-just-updated { color: #31a054; }
 .is-today-updated { color: #aa6900; }
 
+.flex-row { display: flex; flex-flow: row wrap; margin: 5px 0; border: 1px solid #dfdfdf; padding: 3px; }
+.flex-name { flex: 2; }
+.flex-text { flex: 3; }
+.flex-option { flex: 1; }
+.flex-select { flex: 3; }
+
+.error-msg {
+	background: #ffeaea;
+	border: 1px solid #d50000;
+	padding: 15px;
+	margin: 5px;
+}
+.success-msg {
+	background: #e8ffe8;
+	border: 1px solid #009900;
+	padding: 15px;
+	margin: 5px;
+}
 
 /*
 border: 1px solid orange;

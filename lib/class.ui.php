@@ -48,7 +48,7 @@ class clsUserInterface {
 		echo "	<title>R.I.F.T.3</title>";
 		echo "	<link rel='stylesheet' type='text/css' href='res/css/layout.css'>";
 		echo "	<script type='text/javascript' src='res/js/jquery-1.11.3.min.js'></script>";
-		echo "	<script type='text/javascript' src='res/js/rift3.js?20171130'></script>";
+		echo "	<script type='text/javascript' src='res/js/rift3.js?20171130a'></script>";
 		echo "</head>";
 	}
 	
@@ -82,6 +82,22 @@ class clsUserInterface {
 		
 		echo "</body>";
 		echo "</html>";
+	}
+
+	function success_message($msg, $goto = '') {
+		echo "<div class='success-msg'>",$msg,"</div>";
+		if (!empty($goto))
+			echo "<meta http-equiv='refresh' content='5; URL=",$goto,"'>";
+		else
+			echo "<meta http-equiv='refresh' content='5; URL=home.php'>";
+	}
+
+	function error_message($msg, $goto = '') {
+		echo "<div class='error-msg'>",$msg,"</div>";
+		if (!empty($goto))
+			echo "<meta http-equiv='refresh' content='5; URL=",$goto,"'>";
+		else
+			echo "<meta http-equiv='refresh' content='5; URL=home.php'>";
 	}
 }
 ?>

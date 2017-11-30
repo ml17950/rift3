@@ -55,8 +55,11 @@ class clsReceipeInterface {
 		
 		$receipe = $this->rift3->receipes[$receipe_id];
 		
-		if (array_key_exists('trigger', $this->rift3->receipes[$receipe_id]))
-			$rtrigger = $this->rift3->receipes[$receipe_id]['trigger'];
+		if (array_key_exists('trigger', $this->rift3->receipes[$receipe_id])) {
+			foreach ($this->rift3->receipes[$receipe_id]['trigger'] as $tmp => $trigger) {
+				$rtrigger[$trigger['id']] = $trigger['chk'];
+			}
+		}
 		else
 			$rtrigger = array();
 		if (array_key_exists('actions', $this->rift3->receipes[$receipe_id]))
@@ -64,95 +67,105 @@ class clsReceipeInterface {
 		else
 			$ractions = array();
 		
-		echo "<h1>Rezept bearbeiten</h1>";
+		echo "<form name='recfrm' id='recfrm' method='post' action='receipes.php'>";
+		echo "<input type='text' name='do' value='save-receipe'>";
+		echo "<input type='text' name='id' value='",$receipe_id,"'>";
+		echo "<input type='text' name='new_name' value='",$receipe_id,"'>";
 		
-		echo "<form name='recfrm' id='recfrm' action='receipes.php'>";
-		echo "<input type='text' name='oname' value='",$receipe_id,"'>";
-		
-		echo "<h2>Wenn folgende Bedingungen zutreffen ...</h2>";
+		echo "<h2>",TXTRECEIPE_IF,"</h2>";
 		
 		echo "<div class='flex-row'>";
 		echo "<div class='flex-name'>&nbsp;</div>";
 		echo "<div class='flex-option'>Keine Aktion</div>";
-		echo "<div class='flex-option'>An</div>";
-		echo "<div class='flex-option'>Aus</div>";
-		echo "<div class='flex-option'>Jetzt</div>";
+		echo "<div class='flex-option'>An / Ja</div>";
+		echo "<div class='flex-option'>Aus / Nein</div>";
+		echo "<div class='flex-option'>Aktuell</div>";
 		echo "</div>";
 		
 		foreach ($this->rift3->sensors as $skey => $sarr) {
-			if ($sarr['optt'] == 'onoff') {
-				if (array_key_exists($skey, $rtrigger)) {
-					$checkedA = '';
-					if ($rtrigger[$skey] == ON) {
-						$checkedB = 'checked';
-						$checkedC = '';
+			switch ($sarr['optt']) {
+				case 'time24':
+					if (array_key_exists($skey, $rtrigger))
+						$checkvalue = $rtrigger[$skey];
+					else
+						$checkvalue = '';
+					
+					echo "<div class='flex-row'>";
+					echo "<div class='flex-name'>",$this->rift3->sensors[$skey]['name'],"</div>";
+					echo "<div class='flex-select'><select size='1' name='trigger[",$skey,"]'>";
+					echo "<option value=''>---</option>";
+					for ($h=0; $h<24; $h++) {
+						$v = str_pad($h, 2, '0', STR_PAD_LEFT);
+						if ($v == $checkvalue)
+							echo "<option value='",$v,"' selected>",$v,"</option>";
+						else
+							echo "<option value='",$v,"'>",$v,"</option>";
+					}
+					echo "</select></div>";
+					echo "<div class='flex-option'>",$this->rift3->sensors[$skey]['value'],"</div>";
+					echo "</div>";
+					break;
+
+				case 'time60':
+					if (array_key_exists($skey, $rtrigger))
+						$checkvalue = $rtrigger[$skey];
+					else
+						$checkvalue = '';
+					
+					echo "<div class='flex-row'>";
+					echo "<div class='flex-name'>",$this->rift3->sensors[$skey]['name'],"</div>";
+					echo "<div class='flex-select'><select size='1' name='trigger[",$skey,"]'>";
+					echo "<option value=''>---</option>";
+					for ($m=0; $m<60; $m++) {
+						$v = str_pad($m, 2, '0', STR_PAD_LEFT);
+						if ($v == $checkvalue)
+							echo "<option value='",$v,"' selected>",$v,"</option>";
+						else
+							echo "<option value='",$v,"'>",$v,"</option>";
+					}
+					echo "</select></div>";
+					echo "<div class='flex-option'>",$this->rift3->sensors[$skey]['value'],"</div>";
+					echo "</div>";
+					break;
+
+				case 'time':
+					echo "TODO (",$sarr['optt'],")<br>";
+					break;
+
+				case 'number':
+					echo "TODO (",$sarr['optt'],")<br>";
+					break;
+
+				case 'onoff':
+				default:
+					if (array_key_exists($skey, $rtrigger)) {
+						$checkedA = '';
+						if ($rtrigger[$skey] == ON) {
+							$checkedB = 'checked';
+							$checkedC = '';
+						}
+						else {
+							$checkedB = '';
+							$checkedC = 'checked';
+						}
 					}
 					else {
+						$checkedA = 'checked';
 						$checkedB = '';
-						$checkedC = 'checked';
+						$checkedC = '';
 					}
-				}
-				else {
-					$checkedA = 'checked';
-					$checkedB = '';
-					$checkedC = '';
-				}
-				
-				echo "<div class='flex-row'>";
-				echo "<div class='flex-name'>",$this->rift3->sensors[$skey]['name'],"</div>";
-				echo "<div class='flex-option'><input type='radio' class='radio' name='trigger[",$skey,"]' value='' ",$checkedA,"></div>"; //<label for='",$dname,"'>Nix</label></div>";
-				echo "<div class='flex-option'><input type='radio' class='radio' name='trigger[",$skey,"]' value='",ON,"' ",$checkedB,"></div>"; //<label for='",$dname,"'>An</label></div>";
-				echo "<div class='flex-option'><input type='radio' class='radio' name='trigger[",$skey,"]' value='",OFF,"' ",$checkedC,"></div>"; //<label for='",$dname,"'>Aus</label></div>";
-				echo "<div class='flex-option'>",$this->rift3->sensors[$skey]['value'],"</div>";
-				echo "</div>";
-			}
-			elseif ($sarr['optt'] == 'time24') {
-				if (array_key_exists($skey, $rtrigger))
-					$checkvalue = $rtrigger[$skey];
-				else
-					$checkvalue = '';
-				
-				echo "<div class='flex-row'>";
-				echo "<div class='flex-name'>",$this->rift3->sensors[$skey]['name'],"</div>";
-				echo "<div class='flex-select'><select size='1' name='trigger[",$skey,"]'>";
-				echo "<option value=''>---</option>";
-				for ($h=0; $h<24; $h++) {
-					$v = str_pad($h, 2, '0', STR_PAD_LEFT);
-					if ($v == $checkvalue)
-						echo "<option value='",$v,"' selected>",$v,"</option>";
-					else
-						echo "<option value='",$v,"'>",$v,"</option>";
-				}
-				echo "</select></div>";
-				echo "<div class='flex-option'>",$this->rift3->sensors[$skey]['value'],"</div>";
-				echo "</div>";
-			}
-			elseif ($sarr['optt'] == 'time60') {
-				if (array_key_exists($skey, $rtrigger))
-					$checkvalue = $rtrigger[$skey];
-				else
-					$checkvalue = '';
-				
-				echo "<div class='flex-row'>";
-				echo "<div class='flex-name'>",$this->rift3->sensors[$skey]['name'],"</div>";
-				echo "<div class='flex-select'><select size='1' name='trigger[",$skey,"]'>";
-				echo "<option value=''>---</option>";
-				for ($m=0; $m<60; $m++) {
-					$v = str_pad($m, 2, '0', STR_PAD_LEFT);
-					if ($v == $checkvalue)
-						echo "<option value='",$v,"' selected>",$v,"</option>";
-					else
-						echo "<option value='",$v,"'>",$v,"</option>";
-				}
-				echo "</select></div>";
-				echo "<div class='flex-option'>",$this->rift3->sensors[$skey]['value'],"</div>";
-				echo "</div>";
-			}
-			elseif ($sarr['optt'] == 'time') {
+					
+					echo "<div class='flex-row'>";
+					echo "<div class='flex-name'>",$this->rift3->sensors[$skey]['name'],"</div>";
+					echo "<div class='flex-option'><input type='radio' class='radio' name='trigger[",$skey,"]' value='' ",$checkedA,"></div>"; //<label for='",$dname,"'>Nix</label></div>";
+					echo "<div class='flex-option'><input type='radio' class='radio' name='trigger[",$skey,"]' value='",ON,"' ",$checkedB,"></div>"; //<label for='",$dname,"'>An</label></div>";
+					echo "<div class='flex-option'><input type='radio' class='radio' name='trigger[",$skey,"]' value='",OFF,"' ",$checkedC,"></div>"; //<label for='",$dname,"'>Aus</label></div>";
+					echo "<div class='flex-option'>",$this->rift3->sensors[$skey]['value'],"</div>";
+					echo "</div>";
 			}
 		}
 		
-		echo "<br><h2>Dann folgende Aktionen ausführen ...</h2>";
+		echo "<br><h2>",TXTRECEIPE_THEN,"</h2>";
 		
 		echo "<div class='flex-row'>";
 		echo "<div class='flex-name'>&nbsp;</div>";
