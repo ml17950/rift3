@@ -48,7 +48,7 @@ class clsUserInterface {
 		echo "	<title>R.I.F.T.3</title>";
 		echo "	<link rel='stylesheet' type='text/css' href='res/css/layout.css'>";
 		echo "	<script type='text/javascript' src='res/js/jquery-1.11.3.min.js'></script>";
-// 		echo "	<script type='text/javascript' src='main.js?20171012-2'></script>";
+		echo "	<script type='text/javascript' src='res/js/rift3.js?20171130'></script>";
 		echo "</head>";
 	}
 	
