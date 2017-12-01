@@ -1,4 +1,5 @@
 <?php
+// last change: 2017-12-01
 class clsUserInterface {
 	var $rift3;
 	var $log;
@@ -48,7 +49,7 @@ class clsUserInterface {
 		echo "	<title>R.I.F.T.3</title>";
 		echo "	<link rel='stylesheet' type='text/css' href='res/css/layout.css'>";
 		echo "	<script type='text/javascript' src='res/js/jquery-1.11.3.min.js'></script>";
-		echo "	<script type='text/javascript' src='res/js/rift3.js?20171130a'></script>";
+		echo "	<script type='text/javascript' src='res/js/rift3.js?20171201'></script>";
 		echo "</head>";
 	}
 	

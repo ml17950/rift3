@@ -1,3 +1,5 @@
+/* last change: 2017-12-01 */
+
 body {
 	background: #808080;
 	padding: 0;
@@ -107,10 +109,12 @@ border: 1px solid orange;
 			text-align: center;
 		}
 		.log-time {
-			flex: 0 0 60px; /* 95px */
+			flex: 0 0 46px; /* 95px */
+			font-size: 0.8em;
 		}
 		.log-trigger {
 			flex: 1;
+			color: #aa6900;
 		}
 		.log-action {
 			flex: 1;

@@ -23,7 +23,7 @@ class clsLogInterface {
 				echo "<div class='log-box'>";
 				echo "<div class='log-client'><img src='res/img/clients/",$log_entry['c'],".png' width='16' height='16' alt='",$log_entry['c'],"'></div>";
 				echo "<div class='log-time'>",$log_entry['d'],"</div>";
-				if (strlen($log_entry['t']) > 0)
+				if (strlen($log_entry['t']) > 1)
 					echo "<div class='log-trigger'>",$log_entry['t'],"</div>";
 				echo "<div class='log-action'>",$log_entry['a'],"</div>";
 				if ($log_entry['v'] == 'ON')

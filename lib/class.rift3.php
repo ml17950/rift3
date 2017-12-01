@@ -1,5 +1,5 @@
 <?php
-// last change: 2017-11-30
+// last change: 2017-12-01
 class clsRIFT3 {
 	
 	var $sensors;
@@ -31,11 +31,32 @@ class clsRIFT3 {
 		echo __CLASS__.'::'.__FUNCTION__.'<br>';
 		echo "<hr>";
 	}
-	
-	function log($msg) {
+
+	function generate_guid() {
+		$crc = crc32(time());
+		if ($crc & 0x80000000) {
+			$crc ^= 0xffffffff;
+			$crc += 1;
+			$crc = -$crc;
+		}
+		return str_pad(str_replace('ffffffff', '', dechex($crc)), 10, '0', STR_PAD_LEFT);
+	}
+
+	function text2id($text) {
+		$what = array('ä','ö','ü','ß',' ');
+		$with = array('ae','oe','ue','ss','-');
+		$text = str_replace($what, $with, strtolower($text));
+		return $text;
+	}
+
+	function log_old($msg) {
 		file_put_contents(ABSPATH.'/data/rift3.log', date('d.m.y H:i:s')."\t".CLIENT."\t".$msg."\r\n", FILE_APPEND);
 	}
-	
+
+	function log($device, $value, $trigger = '') {
+		file_put_contents(ABSPATH.'/data/rift3.log', date('d.m.y H:i:s')."\t".CLIENT."\t".$trigger."\t".$device."\t".$value."\r\n", FILE_APPEND);
+	}
+
 	function log_resize($num_of_lines = 100) {
 		$file = ABSPATH.'/data/rift3.log';
 		$lines = file($file); // reads the file into an array by line
@@ -51,14 +72,16 @@ class clsRIFT3 {
 		$arr = array();
 		$cnt = 0;
 		foreach ($lines as $line) {
-			$fields = explode("\t", trim($line));
-			
-			$arr[$cnt]['d'] = $fields[0];
-			$arr[$cnt]['c'] = $fields[1];
-			$arr[$cnt]['t'] = $fields[2];
-			$arr[$cnt]['a'] = $fields[3];
-			$arr[$cnt]['v'] = $fields[4];
-			$cnt++;
+			if (!empty($line)) {
+				$fields = explode("\t", trim($line));
+				
+				$arr[$cnt]['d'] = $fields[0];
+				$arr[$cnt]['c'] = $fields[1];
+				$arr[$cnt]['t'] = $fields[2];
+				$arr[$cnt]['a'] = $fields[3];
+				$arr[$cnt]['v'] = $fields[4];
+				$cnt++;
+			}
 		}
 		
 		return $arr;
@@ -163,6 +186,79 @@ echo $id,": ",$last_status_data," / ",$current_status_data," [",$sensor_type,"] 
 		}
 	}
 	
+	function sensor_rename($old_id, $new_id) {
+		$old_file = ABSPATH.'/data/status/'.$old_id.'.status';
+		$new_file = ABSPATH.'/data/status/'.$new_id.'.status';
+		if (file_exists($new_file))
+			return false;
+		if (file_exists($old_file))
+			rename($old_file, $new_file);
+
+		$old_file = ABSPATH.'/data/types/'.$old_id.'.type';
+		$new_file = ABSPATH.'/data/types/'.$new_id.'.type';
+		if (file_exists($old_file))
+			rename($old_file, $new_file);
+
+		$old_file = ABSPATH.'/data/names/'.$old_id.'.name';
+		$new_file = ABSPATH.'/data/names/'.$new_id.'.name';
+		if (file_exists($old_file))
+			rename($old_file, $new_file);
+
+		$old_file = ABSPATH.'/data/logs/'.$old_id.'.log';
+		$new_file = ABSPATH.'/data/logs/'.$new_id.'.log';
+		if (file_exists($old_file))
+			rename($old_file, $new_file);
+
+		file_put_contents(ABSPATH.'/data/last.status', time());
+
+		return true;
+	}
+
+	function sensor_getname($id) {
+		$name_file = ABSPATH.'/data/names/'.$id.'.name';
+		if (is_file($name_file))
+			return file_get_contents($name_file);
+		else
+			return $id;
+	}
+
+	function status_read($id) {
+		$status_file = ABSPATH.'/data/status/'.$id.'.status';
+		if (is_file($status_file))
+			return file_get_contents($status_file);
+		else
+			return UNKNOWN;
+	}
+
+	function status_save($id, $new_status, $type = '') {
+		file_put_contents(ABSPATH.'/data/status/'.$id.'.status', $new_status);
+		if (!empty($type)) {
+			if (!file_exists(ABSPATH.'/data/types/'.$id.'.type'))
+				file_put_contents(ABSPATH.'/data/types/'.$id.'.type', strtolower($type));
+		}
+
+		$this->sensors[$id]['value'] = $new_status;
+		$this->sensors[$id]['changed'] = time();
+
+		$this->last_status_change = time();
+		file_put_contents(ABSPATH.'/data/last.status', time());
+	}
+
+	function status_save_and_log($id, $new_status, $type = '') {
+		file_put_contents(ABSPATH.'/data/status/'.$id.'.status', $new_status);
+		if (!empty($type)) {
+			if (!file_exists(ABSPATH.'/data/types/'.$id.'.type'))
+				file_put_contents(ABSPATH.'/data/types/'.$id.'.type', strtolower($type));
+		}
+		file_put_contents(ABSPATH.'/data/logs/'.$id.'.log', date('d.m.y H:i:s')."\t".$new_status."\r\n", FILE_APPEND);
+
+		$this->sensors[$id]['value'] = $new_status;
+		$this->sensors[$id]['changed'] = time();
+
+		$this->last_status_change = time();
+		file_put_contents(ABSPATH.'/data/last.status', time());
+	}
+
 	function device_initialize() {
 		$files = @glob(ABSPATH.'/data/devices/*.ini');
 		
@@ -279,7 +375,102 @@ echo $id,": ",$last_status_data," / ",$current_status_data," [",$sensor_type,"] 
 		
 		file_put_contents($file, $data);
 	}
-	
+
+	function receipe_run_action($action_key, $action_param, $receipe_name = '') {
+		$debug = false;
+
+		if (isset($this->notifier[$action_key]))
+			$action_type = 'NOTIFIER';
+		elseif (isset($this->devices[$action_key]))
+			$action_type = 'DEVICE';
+		else
+			$action_type = 'SENSOR';
+
+		switch ($action_type) {
+			case 'NOTIFIER':
+				$call_func_name = $this->notifier[$action_key]['func'];
+
+				if ($debug == true) {
+					echo "receipe_name: ",$receipe_name,"<br>";
+					echo "action_type: ",$action_type,"<br>";
+					echo "action_key: ",$action_key,"<br>";
+					echo "action_param: ",$action_param,"<br>";
+					echo "call_func_name: ",$call_func_name,"<br>";
+					echo "<hr>";
+				}
+
+				if (function_exists($call_func_name)) {
+					call_user_func($call_func_name, $action_param);
+					$this->log($action_key, "sent", $receipe_name);
+				}
+				else {
+					if ($debug == true)
+						echo "function [",$call_func_name,"] not found <br>\r\n";
+				}
+				break;
+
+			case 'DEVICE':
+				$call_func_name = $this->devices[$action_key]['type'];
+
+				if (isset($this->devices[$action_key]['name']))
+					$device_name = $this->devices[$action_key]['name'];
+				else
+					$device_name = $action_key;
+
+				if (isset($this->devices[$action_key]['on']))
+					$device_on_param = $this->devices[$action_key]['on'];
+				else
+					$device_on_param = ON;
+				if (isset($this->devices[$action_key]['off']))
+					$device_off_param = $this->devices[$action_key]['off'];
+				else
+					$device_off_param = OFF;
+
+				if ($debug == true) {
+					echo "receipe_name: ",$receipe_name,"<br>";
+					echo "action_type: ",$action_type,"<br>";
+					echo "action_key: ",$action_key,"<br>";
+					echo "action_param: ",$action_param,"<br>";
+					echo "device_name: ",$device_name,"<br>";
+					echo "call_func_name: ",$call_func_name,"<br>";
+					echo "on_param: ",$device_on_param,"<br>";
+					echo "off_param: ",$device_off_param,"<br>";
+					echo "<hr>";
+				}
+
+				if (function_exists($call_func_name)) {
+					call_user_func($call_func_name, $device_on_param, $device_off_param, $action_param);
+					$this->status_save($action_key, $action_param);
+					$this->log($device_name, $action_param, $receipe_name);
+				}
+				else {
+					if ($debug == true)
+						echo "function [",$call_func_name,"] not nound <br>\r\n";
+				}
+				break;
+
+			case 'SENSOR':
+				if (isset($this->sensors[$action_key]))
+					$device_name = $this->seosors[$action_key]['name'];
+				else
+					$device_name = $action_key;
+
+				if ($debug == true) {
+					echo "receipe_name ",$receipe_name,"<br>";
+					echo "action_type: ",$action_type,"<br>";
+					echo "action_key: ",$action_key,"<br>";
+					echo "action_param: ",$action_param,"<br>";
+					echo "devicename: ",$device_name,"<br>";
+ 					echo "device_type: ",$device_type,"<br>";
+					echo "<hr>";
+				}
+
+				$this->status_save($action_key, $action_param);
+				$this->log($device_name, $action_param, $receipe_name);
+				break;
+		}
+	}
+
 	function widgets_initialize() {
 		$widgets_file = ABSPATH.'/data/widgets.ser';
 
