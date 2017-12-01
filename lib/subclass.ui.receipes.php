@@ -77,8 +77,8 @@ class clsReceipeInterface {
 			$ractions = array();
 		
 		echo "<form name='recfrm' id='recfrm' method='post' action='receipes.php'>";
-		echo "<input type='text' name='do' value='save-receipe'>";
-		echo "<input type='text' name='id' value='",$receipe_id,"'>";
+		echo "<input type='hidden' name='do' value='save-receipe'>";
+		echo "<input type='hidden' name='id' value='",$receipe_id,"'>";
 		echo "<input type='text' name='new_name' value='",$receipe_id,"'>";
 		
 		echo "<h2>",TXTRECEIPE_IF,"</h2>";
@@ -229,7 +229,7 @@ class clsReceipeInterface {
 // debugarr($receipe);
 // debugarr($this->rift3->devices);
 // debugarr($this->rift3->notifier);
-debugarr($this->rift3->sensors);
+// debugarr($this->rift3->sensors);
 
 		
 		echo "</div>"; // .receipes-container

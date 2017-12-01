@@ -88,17 +88,17 @@ class clsUserInterface {
 	function success_message($msg, $goto = '') {
 		echo "<div class='success-msg'>",$msg,"</div>";
 		if (!empty($goto))
-			echo "<meta http-equiv='refresh' content='5; URL=",$goto,"'>";
+			echo "<meta http-equiv='refresh' content='3; URL=",$goto,"'>";
 		else
-			echo "<meta http-equiv='refresh' content='5; URL=home.php'>";
+			echo "<meta http-equiv='refresh' content='3; URL=home.php'>";
 	}
 
 	function error_message($msg, $goto = '') {
 		echo "<div class='error-msg'>",$msg,"</div>";
 		if (!empty($goto))
-			echo "<meta http-equiv='refresh' content='5; URL=",$goto,"'>";
+			echo "<meta http-equiv='refresh' content='3; URL=",$goto,"'>";
 		else
-			echo "<meta http-equiv='refresh' content='5; URL=home.php'>";
+			echo "<meta http-equiv='refresh' content='3; URL=home.php'>";
 	}
 }
 ?>

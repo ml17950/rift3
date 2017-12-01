@@ -489,7 +489,7 @@ class clsRIFT3 {
 			}
 		}
 	}
-	
+
 	function receipe_check_trigger($debug = false) {
 		$execute_counter = 0;
 		

@@ -176,7 +176,7 @@ class clsRIFT3 {
 		$this->sensors[$id]['type'] = $sensor_type;
 		$this->sensors[$id]['optt'] = $options_type;
 		
-echo $id,": ",$last_status_data," / ",$current_status_data," [",$sensor_type,"] [",$options_type,"]<br>";
+// echo "sensor_update :: ",$id,": ",$last_status_data," / ",$current_status_data," [",$sensor_type,"] [",$options_type,"]<br>";
 		
 		if ($current_status_data != $last_status_data) {
 			file_put_contents($status_file, $current_status_data);
