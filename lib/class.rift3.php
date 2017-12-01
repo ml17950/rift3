@@ -376,6 +376,23 @@ echo $id,": ",$last_status_data," / ",$current_status_data," [",$sensor_type,"] 
 		file_put_contents($file, $data);
 	}
 
+	function receipe_display_trigger(&$trigger_array) {
+		foreach ($trigger_array as $hash => $trigger) {
+			$sensor_id = $trigger['id'];
+			$check_val = $trigger['chk'];
+
+			if (strpos($checkvalue, ':') !== false) {
+				echo "<div class='receipe-trigger-fits-not'>",$this->sensors[$sensor_id]['name']," = ",$check_val," TODO</div>";
+			}
+			else {
+				if ($this->sensors[$sensor_id]['value'] == $check_val)
+					echo "<div class='receipe-trigger-fits'>",$this->sensors[$sensor_id]['name']," = ",$check_val,"</div>";
+				else
+					echo "<div class='receipe-trigger-fits-not'>",$this->sensors[$sensor_id]['name']," = ",$check_val,"</div>";
+			}
+		}
+	}
+
 	function receipe_run_action($action_key, $action_param, $receipe_name = '') {
 		$debug = false;
 
@@ -451,7 +468,7 @@ echo $id,": ",$last_status_data," / ",$current_status_data," [",$sensor_type,"] 
 
 			case 'SENSOR':
 				if (isset($this->sensors[$action_key]))
-					$device_name = $this->seosors[$action_key]['name'];
+					$device_name = $this->sensors[$action_key]['name'];
 				else
 					$device_name = $action_key;
 

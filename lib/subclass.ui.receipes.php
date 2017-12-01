@@ -1,5 +1,5 @@
 <?php
-// last change: 2017-11-23
+// last change: 2017-12-01
 class clsReceipeInterface {
 	var $rift3;
 	
@@ -20,9 +20,8 @@ class clsReceipeInterface {
 
 		if (count($this->rift3->receipes) > 0) {
 			foreach ($this->rift3->receipes as $key => $receipe) {
-				echo "<div class='receipe-box' onclick='document.location.href=\"receipes.php?do=edit-trigger&id=",$key,"\";'>";
-// 				echo "<div class='receipe-logo'><img src='res/img/clients/",$log_entry['c'],".png' width='16' height='16' alt='",$log_entry['c'],"'></div>";
-				echo "<div class='receipe-title'>",$receipe['name'],"</div>";
+				echo "<div class='receipe-box'>";
+				echo "<div class='receipe-title' onclick='document.location.href=\"receipes.php?do=edit-trigger&id=",$key,"\";'>",$receipe['name'],"</div>";
 
 				echo "<div class='receipe-meta'>";
 				if ($receipe['trigger']['7280fa2cf1815eb354fca963addfc2b0']['chk'] == ON)
@@ -32,7 +31,17 @@ class clsReceipeInterface {
 				else
 					echo "<div class='receipe-status'><span class='receipe-status-circle is-val'></span> ",TXTUNKNOWN,"</div>";
 				echo "<div class='receipe-time'>",date('d.m.y H:i', $receipe['last_run']),"</div>";
+				if (count($receipe['trigger']) > 0) {
+					$receipe_hash = md5($key);
+					echo "<div class='receipe-info'><img src='res/img/info.png' width='16' height='16' onclick='return toggle_receipe_trigger(\"",$receipe_hash,"\");'></div>";
+				}
 				echo "</div>"; // .receipe-meta
+				
+				if (count($receipe['trigger']) > 0) {
+					echo "<div class='receipe-trigger is-hidden' id='js-",$receipe_hash,"'>";
+					$this->rift3->receipe_display_trigger($receipe['trigger'], $receipe_hash);
+					echo "</div>"; // .receipe-trigger
+				}
 
 				echo "</div>"; // .receipe-box
 			}

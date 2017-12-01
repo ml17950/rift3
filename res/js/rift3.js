@@ -1,4 +1,4 @@
-// last change: 2017-11-28
+// last change: 2017-12-01
 
 function log(msg) {
 	var theTime = new Date().toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1");
@@ -78,3 +78,8 @@ var rift3switch = {
 		}
 	}
 };
+
+function toggle_receipe_trigger(id) {
+	$('#js-'+id).slideToggle('slow', function() { });
+	return false;
+}

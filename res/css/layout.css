@@ -133,15 +133,13 @@ border: 1px solid orange;
 		border-radius: 5px;
 		color: #dfdfdf;
 		margin: 10px;
-		cursor: pointer;
 	}
-		.receipe-logo {
-		}
 		.receipe-title {
 			background: linear-gradient(to bottom, #393939 0%,#181A1C 100%);
 			border-bottom: 1px solid #434343;
 			font-size: 2.5em;
 			padding: 10px;
+			cursor: pointer;
 		}
 		.receipe-meta {
 			background-color: #181A1C;
@@ -154,7 +152,7 @@ border: 1px solid orange;
 			justify-content: space-between;
 		}
 			.receipe-status {
-				flex: 0 1 auto;
+				flex: 1 1 auto;
 				border-radius: 5px;
 				padding: 3px;
 			}
@@ -167,8 +165,36 @@ border: 1px solid orange;
 					margin-right: 5px;
 				}
 			.receipe-time {
-				flex: 0 1 auto;
+				flex: 0 0 100px;
 				padding: 3px;
+			}
+			.receipe-info {
+				flex: 0 0 20px;
+				padding: 3px;
+				cursor: pointer;
+			}
+		.receipe-trigger {
+			background-color: #181A1C;
+			border-top: 1px solid #434343;
+			border-bottom-right-radius: 5px;
+			border-bottom-left-radius: 5px;
+			padding: 5px;
+		}
+			.receipe-trigger-fits {
+				display: inline-block;
+				background: #31a054;
+				border: 1px solid #555;
+				color: white;
+				padding: 2px 5px;
+				margin: 3px;
+			}
+			.receipe-trigger-fits-not {
+				display: inline-block;
+				background: #98272a;
+				border: 1px solid #555;
+				color: white;
+				padding: 2px 5px;
+				margin: 3px;
 			}
 
 .sensor-container {
