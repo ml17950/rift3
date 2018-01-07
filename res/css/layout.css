@@ -1,4 +1,4 @@
-/* last change: 2017-12-01 */
+/* last change: 2017-12-06 */
 
 body {
 	background: #808080;
@@ -58,6 +58,7 @@ h1 {
 .is-hidden { display: none; }
 .is-on  { background: #31a054; color: white; }
 .is-off { background: #98272a; color: white; }
+.is-changed { background: #aa6900; color: white; }
 .is-val { background: #6092ed; color: white; }
 .is-just-updated { color: #31a054; }
 .is-today-updated { color: #aa6900; }
@@ -120,7 +121,7 @@ border: 1px solid orange;
 			flex: 1;
 		}
 		.log-value {
-			flex: 0 0 50px;
+			flex: 0 0 58px;
 			text-align: center;
 			padding: 6px 0;
 		}

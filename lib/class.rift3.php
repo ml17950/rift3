@@ -1,5 +1,5 @@
 <?php
-// last change: 2017-12-01
+// last change: 2017-12-06
 class clsRIFT3 {
 	
 	var $sensors;
@@ -161,31 +161,41 @@ class clsRIFT3 {
 		}
 	}
 	
-	function sensor_update($id, $current_status_data, $sensor_type, $options_type) {
+	function sensor_update($id, $current_status_data, $sensor_type, $options_type, $tristate = false) {
 		$status_file = ABSPATH.'/data/status/'.$id.'.status';
 		$typeof_file = ABSPATH.'/data/types/'.$id.'.type';
-		
+
 		if (is_file($status_file))
 			$last_status_data = file_get_contents($status_file);
 		else
 			$last_status_data = UNKNOWN;
-		
+
 		if (!is_file($typeof_file))
 			file_put_contents($typeof_file, strtolower($sensor_type));
-		
+
 		$this->sensors[$id]['type'] = $sensor_type;
 		$this->sensors[$id]['optt'] = $options_type;
-		
+
+		if ($tristate) {
+			if (($last_status_data == OFF) && ($current_status_data == ON))
+				$current_status_data = OFF2ON;
+			else if (($last_status_data == ON) && ($current_status_data == OFF))
+				$current_status_data = ON2OFF;
+
+			if ($current_status_data != $last_status_data)
+				$this->log($id, $current_status_data, '');
+		}
+
 // echo "sensor_update :: ",$id,": ",$last_status_data," / ",$current_status_data," [",$sensor_type,"] [",$options_type,"]<br>";
-		
+
 		if ($current_status_data != $last_status_data) {
 			file_put_contents($status_file, $current_status_data);
 			$this->sensors[$key]['value'] = $current_status_data;
-			$this->sensors[$key]['changed'] = 'x'.time();
+			$this->sensors[$key]['changed'] = time();
 			$this->last_status_change = time();
 		}
 	}
-	
+
 	function sensor_rename($old_id, $new_id) {
 		$old_file = ABSPATH.'/data/status/'.$old_id.'.status';
 		$new_file = ABSPATH.'/data/status/'.$new_id.'.status';
@@ -391,6 +401,66 @@ class clsRIFT3 {
 					echo "<div class='receipe-trigger-fits-not'>",$this->sensors[$sensor_id]['name']," = ",$check_val,"</div>";
 			}
 		}
+	}
+
+	function receipe_check_trigger($debug = false) {
+		$execute_counter = 0;
+
+		foreach ($this->receipes as $rkey => $receipe) {
+			$num_trigger = count($receipe['trigger']);
+
+			if ($num_trigger > 0) {
+				$run_trigger = 0;
+
+// echo "<hr>Rezept: ",$rkey,"<br>";
+				foreach ($receipe['trigger'] as $hash => $trigger) {
+					$sensor_id = $trigger['id'];
+					$check_val = $trigger['chk'];
+
+// echo "- ",$sensor_id,":",$check_val,"=",$this->sensors[$sensor_id]['value'],"<br>";
+					if (strpos($check_val, ':') !== false) {
+						$chkfunc = explode(':', $check_val);
+// 						debugarr($chkfunc);
+						switch ($chkfunc[0]) {
+							case 'NEWER':
+								$last_status_change = filemtime(STATUSDATA.$sensor_id.'.status');
+								//echo "NEWER: ",time()," - ",$last_status_change," = ",(time() - $last_status_change)," :: ",$chkfunc[1],"<br>";
+								if ((time() - $last_status_change) <= $chkfunc[1])
+									$run_trigger++;
+								break;
+
+							case 'OLDER':
+								$last_status_change = filemtime(STATUSDATA.$sensor_id.'.status');
+								//echo "OLDER: ",time()," - ",$last_status_change," = ",(time() - $last_status_change)," :: ",$chkfunc[1],"<br>";
+								if ((time() - $last_status_change) >= $chkfunc[1])
+									$run_trigger++;
+								break;
+						}
+					}
+					else {
+						if ($this->sensors[$sensor_id]['value'] == $check_val)
+							$run_trigger++;
+					}
+				}
+// echo $run_trigger," von ",$num_trigger,"<br>";
+
+				if ($run_trigger == $num_trigger) {
+// echo "execute ",$rkey,"<hr>";
+					foreach ($receipe['actions'] as $actionname => $actionparam) {
+						if ($debug == true)
+							echo "run action ",$actionname," :: ",$actionparam," (",$rkey,")<br>";
+						$this->receipe_run_action($actionname, $actionparam, $rkey);
+					}
+					$execute_counter++;
+				}
+				else {
+					if ($debug == true)
+						echo $rkey,": not all trigger matching (",$run_trigger,"/",$num_trigger,")<br>";
+				}
+			}
+		}
+
+		echo $execute_counter," receipes executed";
 	}
 
 	function receipe_run_action($action_key, $action_param, $receipe_name = '') {

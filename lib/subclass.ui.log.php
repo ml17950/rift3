@@ -1,5 +1,5 @@
 <?php
-// last change: 2017-11-28
+// last change: 2017-12-06
 class clsLogInterface {
 	var $rift3;
 
@@ -26,10 +26,12 @@ class clsLogInterface {
 				if (strlen($log_entry['t']) > 1)
 					echo "<div class='log-trigger'>",$log_entry['t'],"</div>";
 				echo "<div class='log-action'>",$log_entry['a'],"</div>";
-				if ($log_entry['v'] == 'ON')
+				if ($log_entry['v'] == ON)
 					echo "<div class='log-value is-on'>",$log_entry['v'],"</div>";
-				else if ($log_entry['v'] == 'OFF')
+				else if ($log_entry['v'] == OFF)
 					echo "<div class='log-value is-off'>",$log_entry['v'],"</div>";
+				elseif (($log_entry['v'] == ON2OFF) || ($log_entry['v'] == OFF2ON))
+					echo "<div class='log-value is-changed'>",$log_entry['v'],"</div>";
 				else
 					echo "<div class='log-value is-val'>",$log_entry['v'],"</div>";
 				echo "</div>";
