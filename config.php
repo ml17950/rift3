@@ -1,5 +1,5 @@
 <?php
-// last change: 2018-08-10
+// last change: 2018-07-09
 	include_once('_sysconfig.php');
 	include_once('lib/common.php');
 	include_once('lib/class.ui.php');
@@ -61,9 +61,7 @@
 	}
 	$ui->footer();
 
-	echo "<div class='debug'>";
+// 	echo "<div class='debug'>";
 // 	debugarr($ui->rift3->config);
-// 	debugarr($ui->rift3->status);
-	debugarr($ui->rift3->config['devices']);
-	echo "</div>";
+// 	echo "</div>";
 ?>

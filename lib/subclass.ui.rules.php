@@ -1,5 +1,5 @@
 <?php
-// last change: 2018-07-30
+// last change: 2018-08-24
 class clsRuleInterface {
 	var $rift3;
 
@@ -16,44 +16,42 @@ class clsRuleInterface {
 		//echo __CLASS__.'::'.__FUNCTION__.'<br>';
 		echo "<div class='js-rules rule-container'>";
 
-		foreach ($this->rift3->rules as $ruleid => $rule) {
-// debugarr($rule);
+		if (is_array($this->rift3->rules)) {
+			foreach ($this->rift3->rules as $ruleid => $rule) {
+				echo "<div class='rule-box'>";
+				if ($rule['active'] == 1)
+					echo "<div class='rule-status'><a href='rules.php?do=deactivate-rule&id=",$ruleid,"'><img src='res/img/ui/is-on.png' width='40' height='40'></a></div>";
+				else
+					echo "<div class='rule-status'><a href='rules.php?do=activate-rule&id=",$ruleid,"'><img src='res/img/ui/is-off.png' width='40' height='40'></a></div>";
+				echo "<div class='rule-name'>",$rule['name'],"</div>";
+				echo "<div class='rule-options'><a href='rules.php?do=edit&id=",$ruleid,"'><img src='res/img/ui/edit.png' width='24' height='24' alt='edit' title='edit'></a></div>";
 
-			echo "<div class='rule-box'>";
-			if ($rule['active'] == 1)
-				echo "<div class='rule-status'><a href='rules.php?do=deactivate-rule&id=",$ruleid,"'><img src='res/img/ui/is-on.png' width='40' height='40'></a></div>";
-			else
-				echo "<div class='rule-status'><a href='rules.php?do=activate-rule&id=",$ruleid,"'><img src='res/img/ui/is-off.png' width='40' height='40'></a></div>";
-			echo "<div class='rule-name'>",$rule['name'],"</div>";
-			echo "<div class='rule-options'><a href='rules.php?do=edit&id=",$ruleid,"'><img src='res/img/ui/edit.png' width='24' height='24' alt='edit' title='edit'></a></div>";
-			
-// 			echo "<div class='rule-conditions'>";
-// 			foreach ($rule['conditions'] as $type => $condition) {
-// 				if (!empty($condition['status']) && ($condition['status'] != '-'))
-// 					echo "&bull; ",$condition['status']," &rarr; ",$condition['type']," // ",$condition['value'],"<br>";
-// 			}
-// 			echo "</div>"; // .rule-conditions
-// 			
-// 			echo "<div class='rule-actions'>";
-// 			foreach ($rule['action'] as $type => $action) {
-// 				if (!empty($action['id']) && ($action['id'] != '-'))
-// 					echo "&bull; ",$action['id']," &rarr; ",$action['value'],"<br>";
-// 			}
-// 			echo "</div>"; // .rule-actions
-			
-			echo "</div>"; // .rule-box
+// 				echo "<div class='rule-conditions'>";
+// 				foreach ($rule['conditions'] as $type => $condition) {
+// 					if (!empty($condition['status']) && ($condition['status'] != '-'))
+// 						echo "&bull; ",$condition['status']," &rarr; ",$condition['type']," // ",$condition['value'],"<br>";
+// 				}
+// 				echo "</div>"; // .rule-conditions
+// 				
+// 				echo "<div class='rule-actions'>";
+// 				foreach ($rule['action'] as $type => $action) {
+// 					if (!empty($action['id']) && ($action['id'] != '-'))
+// 						echo "&bull; ",$action['id']," &rarr; ",$action['value'],"<br>";
+// 				}
+// 				echo "</div>"; // .rule-actions
+
+				echo "</div>"; // .rule-box
+			}
+
+			// -----------------------------------------------------------------
+
+			echo "<div class='form-container'>";
+			echo "<form method='POST' action='rules.php' accept-charset='utf-8'>";
+			echo "<input type='hidden' name='do' value='create-rule'>";
+			echo "<input type='submit' value='Neue Regel erstellen'>";
+			echo "</form>";
+			echo "</div>"; // .form-container
 		}
-
-		// ---------------------------------------------------------------------
-
-		echo "<div class='form-container'>";
-		echo "<form method='POST' action='rules.php' accept-charset='utf-8'>";
-		echo "<input type='hidden' name='do' value='create-rule'>";
-		echo "<input type='submit' value='Neue Regel erstellen'>";
-		echo "</form>";
-		echo "</div>"; // .form-container
-
-		// ---------------------------------------------------------------------
 
 		echo "</div>"; // .rules-container
 
@@ -107,9 +105,9 @@ class clsRuleInterface {
 			$condchecks['EQU'] = 'gleich';
 			$condchecks['NEQ'] = 'nicht gleich';
 			$condchecks['LSS'] = 'kleiner als';
-			$condchecks['LEQ'] = 'kleiner als oder gleich';
+			$condchecks['LEQ'] = 'kleiner oder gleich';
 			$condchecks['GTR'] = 'größer als';
-			$condchecks['GEQ'] = 'größer als oder gleich';
+			$condchecks['GEQ'] = 'größer oder gleich';
 
 			echo "<label for='cond_type_",$cond_index,"'>ist</label>";
 

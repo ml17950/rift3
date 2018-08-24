@@ -1,5 +1,5 @@
 <?php
-// last change: 2018-08-10
+// last change: 2018-08-24
 class clsRIFT3 {
 	var $dbgout;
 	var $config;
@@ -50,7 +50,15 @@ class clsRIFT3 {
 	}
 	
 	function log_read() {
-		$lines = file(ABSPATH.'/config/rift3.log');
+		$file = ABSPATH.'/config/rift3.log';
+
+		if (!is_file($file)) {
+			file_put_contents($file, date('c')."\t".$this->client."\tconfig\tLogfile\tcreated\t\r\n");
+			chmod($file, CHMODMASK);
+			return array();
+		}
+
+		$lines = file($file);
 		krsort($lines);
 
 		$arr = array();
@@ -191,7 +199,7 @@ class clsRIFT3 {
 		$this->config_has_changed = true;
 	}
 
-	function device_register($device_id, $reg_info, $protocol) {
+	function device_register($device_id, $reg_info) {
 		$items = explode('|', $reg_info);
 		foreach ($items as $item) {
 			$fields = explode(':', $item);
@@ -212,9 +220,7 @@ class clsRIFT3 {
 				$this->config['devices'][$device_id][$fields[0]] = $fields[1];
 		}
 		$this->config['devices'][$device_id]['registered'] = date('Y-m-d H:i:s');
-		$this->config['devices'][$device_id]['connected'] = date('Y-m-d H:i:s');
 		$this->config['devices'][$device_id]['last-ping'] = date('Y-m-d H:i:s');
-		$this->config['devices'][$device_id]['protocol'] = $protocol;
 		$this->config_has_changed = true;
 		$this->log('config', $device_id, 'registered');
 	}
@@ -248,43 +254,16 @@ class clsRIFT3 {
 		$this->log('device', $device_id, 'alive');
 	}
 
-	function device_reconnected($device_id) {
-		$this->config['devices'][$device_id]['connected'] = date('Y-m-d H:i:s');
-		$this->config_has_changed = true;
-		$this->log('device', $device_id, 'reconnect');
-	}
-
 	function device_send_control_command($device_id, $command) {
-		switch ($this->config['devices'][$device_id]['protocol']) {
-			case 'HTTP':
-				$remote_ip = $this->config['devices'][$device_id]['ip'];
-				$remote_port = 18266;
+		$remote_ip = $this->config['devices'][$device_id]['ip'];
+		$remote_port = 18266;
 
-				if ($socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP)) {
-					socket_sendto($socket, $command, strlen($command), 0, $remote_ip, $remote_port);
-					$this->log('config', $device_id, $command, $remote_ip.":".$remote_port);
-				}
-				else
-					$this->log('config', $device_id, 'Cant create UDP socket');
-				break; 
-
-			case 'MQTT':
-				include_once('class.mqtt.php');
-				$topic = 'ohoco/callback/'.$device_id;
-				$MQTT = new phpMQTT(MQTT_BROKER_ADDR, MQTT_BROKER_PORT, 'MqttPubRelay');
-				if ($MQTT->connect(true, NULL, MQTT_USERNAME, MQTT_PASSWORD)) {
-					$MQTT->publish($topic, $command, 1, false);
-					$MQTT->close();
-					$this->log('config', $device_id, $command, $topic);
-				}
-				else {
-				    $this->log('config', $device_id, 'MQTT timeout');
-				}
-				break;
-
-			default:
-				die('ERR: UNKNOWN PROTOCOL');
+		if ($socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP)) {
+			socket_sendto($socket, $command, strlen($command), 0, $remote_ip, $remote_port);
+			$this->log('config', $device_id, $command, $remote_ip.":".$remote_port);
 		}
+		else
+			$this->log('config', $device_id, 'Cant create UDP socket');
 	}
 
 	function device_config_save($device_id, $cfg_info) {
@@ -581,8 +560,8 @@ class clsRIFT3 {
 			$lines = file($config_file);
 			foreach ($lines as $line) {
 				$fields = explode('->', trim($line));
-				if (count($fields) > 2) {
-					$this->trigger[$fields[0]][] = $fields[1].'/'.$fields[2];
+				if (count($fields) == 2) {
+					$this->trigger[$fields[0]][] = $fields[1];
 				}
 			}
 		}
@@ -625,6 +604,16 @@ class clsRIFT3 {
 								$message = str_replace($match, $replacement, $message);
 							}
 						}
+						preg_match_all("/@(.*?)@/", $message, $matches);
+						if (is_array($matches[0]) && (count($matches[0]) > 0)) {
+							foreach ($matches[0] as $m => $match) {
+								if (array_key_exists($matches[1][$m], $this->status))
+									$replacement = $this->status[$matches[1][$m]]['status'];
+								else
+									$replacement = '';
+								$message = str_replace($match, $replacement, $message);
+							}
+						}
 
 						switch ($fields[1]) {
 							case 'telegram':
@@ -649,7 +638,7 @@ class clsRIFT3 {
 
 	function trigger_unregister($trigger_id) {
 		unset($this->config['trigger'][$trigger_id]);
-		unset($this->trigger[$sensor_id]);
+		unset($this->trigger[$trigger_id]);
 		$this->config_has_changed = true;
 	}
 
@@ -813,21 +802,23 @@ class clsRIFT3 {
 						foreach ($rule['conditions'] as $cid => $condition) {
 							$status_value = $this->status[$condition['status']]['status'];
 							$check_value = $condition['value'];
-							echo "[[",$condition['status']," :: ",$status_value," ",$condition['type']," ",$check_value," :: ",$cond2run,"&rarr;";
+							$status_value_float = floatval(preg_replace('/[^0-9.,]+/', '', $status_value));
+							$check_value_float  = floatval(preg_replace('/[^0-9.,]+/', '', $check_value));
+							echo "[[ ",$condition['status']," :: ",$status_value," ",$condition['type']," ",$check_value," :: ",$cond2run,"&rarr;";
+// 							echo "<br>((",$status_value_float,"/",$check_value_float,"))";
 							switch ($condition['type']) {
 								case 'EQU': if ($status_value == $check_value) { $cond2run++; } break;
 								case 'NEQ': if ($status_value != $check_value) { $cond2run++; } break;
-								case 'LSS': if ($status_value < $check_value) { $cond2run++; } break;
-								case 'LEQ': if ($status_value <= $check_value) { $cond2run++; } break;
-								case 'GTR': if ($status_value > $check_value) { $cond2run++; } break;
-								case 'GEQ': if ($status_value >= $check_value) { $cond2run++; } break;
+								case 'LSS': if ($status_value_float < $check_value_float) { $cond2run++; } break;
+								case 'LEQ': if ($status_value_float <= $check_value_float) { $cond2run++; } break;
+								case 'GTR': if ($status_value_float > $check_value_float) { $cond2run++; } break;
+								case 'GEQ': if ($status_value_float >= $check_value_float) { $cond2run++; } break;
 								default: echo "ERROR in RULE/COND/TYPE";
 							}
-							echo $cond2run,"]]<br>";
+							echo $cond2run," ]]<br>";
 						}
 					}
-					echo "\$cond2check: ",$cond2check,"<br>";
-					echo "\$cond2run: ",$cond2run,"<br>";
+					echo "\$cond2check: ",$cond2check," / \$cond2run: ",$cond2run,"<br>";
 					echo "<hr>";
 					
 					if ($cond2run >= $cond2check) {

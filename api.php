@@ -1,5 +1,5 @@
 <?php
-// last change: 2018-08-10
+// last change: 2018-07-31
 	define('DEBUG' , false);
 // 	define('DEBUG' , true);
 
@@ -48,7 +48,7 @@
 
 			switch ($req_section) {
 				case 'device':
-					$rift3->device_register($req_device_id, $payload, 'HTTP');
+					$rift3->device_register($req_device_id, $payload);
 					echo 'OK';
 					break;
 
@@ -144,6 +144,8 @@
 			break;
 
 		case 'http':
+			$rift3->client = 'web';
+
 			switch ($req_section) {
 				case 'switch':
 					$req_device_id		= $path_array[2];

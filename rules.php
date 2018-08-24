@@ -1,5 +1,5 @@
 <?php
-// last change: 2018-07-30
+// last change: 2018-07-31
 	include_once('_sysconfig.php');
 	include_once('lib/common.php');
 	include_once('lib/class.ui.php');
@@ -34,10 +34,8 @@
 		exit;
 	}
 	elseif ($do == 'save-rule') {
-// debugarr($_POST);
 		$id = param_int('ruleid');
-// debugarr($ui->rift3->rules[$id]);
-		
+
 		$ui->rift3->rules[$id]['name'] = param('rulename');
 
 		for ($cond_index=1; $cond_index<4; $cond_index++) {
@@ -63,14 +61,13 @@
 		if (!empty($_POST['triggeridnew'])) {
 			$ui->rift3->rules[$id]['action']['trigger']['id'] = param('triggeridnew');
 			$ui->rift3->trigger[$ui->rift3->rules[$id]['action']['trigger']['id']][0] = 'empty/created';
+			$ui->rift3->config['trigger'][$ui->rift3->rules[$id]['action']['trigger']['id']] = 0;
+			$ui->rift3->config_has_changed = true;
 			$ui->rift3->trigger_write();
 		}
 		else
 			$ui->rift3->rules[$id]['action']['trigger']['id'] = param('triggeridold');
 
-		
-// debugarr($ui->rift3->rules[$id]);
-		
 		$ui->rift3->rules_write();
 		header('Location: rules.php?do=edit&id='.$id);
 		exit;
