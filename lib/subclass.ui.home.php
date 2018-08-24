@@ -1,5 +1,5 @@
 <?php
-// last change: 2018-07-16
+// last change: 2018-08-24
 class clsHomeInterface {
 	var $rift3;
 
@@ -65,6 +65,8 @@ class clsHomeInterface {
 							break;
 
 						default:
+							if (empty($sensor_type))
+								$sensor_type = 'is';
 							$wimg = 'res/img/sensors/'.$sensor_type.'-'.$this->rift3->status[$id]['status'].'.png';
 							$wtxt = $this->rift3->config['names'][$id];
 // 							$wimg = 'res/img/ui/unknown.png';
@@ -88,19 +90,19 @@ class clsHomeInterface {
 
 	function display_switches() {
 		//echo __CLASS__.'::'.__FUNCTION__.'<br>';
-		echo "<div class='js-devices device-container'>";
+		echo "<div class='js-devices switch-container'>";
 
 		if (count($this->rift3->config['switch']) > 0) {
 			foreach ($this->rift3->config['switch'] as $switch_id => $device_id) {
-				echo "<div class='device-box hand' id='device-",$switch_id,"' onclick='return rift3switch.toggle(\"",$switch_id,"\", \"",$this->rift3->config['types'][$switch_id],"\");'>";
-				echo "<div class='device-icon'><img id='device-",$switch_id,"-icon' data-state='",$this->rift3->status[$switch_id]['status'],"' src='res/img/sensors/",$this->rift3->config['types'][$switch_id],"-",$this->rift3->status[$switch_id]['status'],".png' width='48' height='48' alt='",$this->rift3->config['types'][$switch_id],"'></div>";
-				echo "<div class='device-name'>",$this->rift3->config['names'][$switch_id],"</div>";
-				echo "<div class='device-time'>",dtstr($this->rift3->status[$switch_id]['change'], 'd.m H:i:s'),"</div>";
+				echo "<div class='switch-box hand' id='device-",$switch_id,"' onclick='return rift3switch.toggle(\"",$switch_id,"\", \"",$this->rift3->config['types'][$switch_id],"\");'>";
+				echo "<div class='switch-icon'><img id='device-",$switch_id,"-icon' data-state='",$this->rift3->status[$switch_id]['status'],"' src='res/img/sensors/",$this->rift3->config['types'][$switch_id],"-",$this->rift3->status[$switch_id]['status'],".png' width='48' height='48' alt='",$this->rift3->config['types'][$switch_id],"'></div>";
+				echo "<div class='switch-name'>",$this->rift3->config['names'][$switch_id],"</div>";
+				echo "<div class='switch-time'>",dtstr($this->rift3->status[$switch_id]['change'], 'd.m H:i:s'),"</div>";
 				echo "</div>";
 			}
 		}
 
-		echo "</div>"; // .device-container
+		echo "</div>"; // .switch-container
 
 // 		echo "<div class='debug'>";
 // 		debugarr($this->rift3->conf['devices']);

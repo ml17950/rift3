@@ -199,7 +199,7 @@ class clsRIFT3 {
 		$this->config_has_changed = true;
 	}
 
-	function device_register($device_id, $reg_info) {
+	function device_register($device_id, $reg_info, $protocol) {
 		$items = explode('|', $reg_info);
 		foreach ($items as $item) {
 			$fields = explode(':', $item);
@@ -220,7 +220,9 @@ class clsRIFT3 {
 				$this->config['devices'][$device_id][$fields[0]] = $fields[1];
 		}
 		$this->config['devices'][$device_id]['registered'] = date('Y-m-d H:i:s');
+		$this->config['devices'][$device_id]['connected'] = date('Y-m-d H:i:s');
 		$this->config['devices'][$device_id]['last-ping'] = date('Y-m-d H:i:s');
+		$this->config['devices'][$device_id]['protocol'] = $protocol;
 		$this->config_has_changed = true;
 		$this->log('config', $device_id, 'registered');
 	}
@@ -246,6 +248,10 @@ class clsRIFT3 {
 		$items = explode('|', $alive_info);
 		foreach ($items as $item) {
 			$fields = explode(':', $item);
+			switch ($fields[0]) {
+				case 'ws':		$fields[0] = 'WiFi Signal'; break;
+				case 'vc':		$fields[0] = 'Voltage'; break;
+			}
 			if ($fields[1] != '')
 				$this->config['devices'][$device_id][$fields[0]] = $fields[1];
 		}
@@ -254,16 +260,43 @@ class clsRIFT3 {
 		$this->log('device', $device_id, 'alive');
 	}
 
-	function device_send_control_command($device_id, $command) {
-		$remote_ip = $this->config['devices'][$device_id]['ip'];
-		$remote_port = 18266;
+	function device_reconnected($device_id) {
+		$this->config['devices'][$device_id]['connected'] = date('Y-m-d H:i:s');
+		$this->config_has_changed = true;
+		$this->log('device', $device_id, 'reconnect');
+	}
 
-		if ($socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP)) {
-			socket_sendto($socket, $command, strlen($command), 0, $remote_ip, $remote_port);
-			$this->log('config', $device_id, $command, $remote_ip.":".$remote_port);
+	function device_send_control_command($device_id, $command) {
+		switch ($this->config['devices'][$device_id]['protocol']) {
+			case 'HTTP':
+				$remote_ip = $this->config['devices'][$device_id]['ip'];
+				$remote_port = 18266;
+
+				if ($socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP)) {
+					socket_sendto($socket, $command, strlen($command), 0, $remote_ip, $remote_port);
+					$this->log('config', $device_id, $command, $remote_ip.":".$remote_port);
+				}
+				else
+					$this->log('config', $device_id, 'Cant create UDP socket');
+				break; 
+
+			case 'MQTT':
+				include_once('class.mqtt.php');
+				$topic = 'ohoco/callback/'.$device_id;
+				$MQTT = new phpMQTT(MQTT_BROKER_ADDR, MQTT_BROKER_PORT, 'MqttPubRelay');
+				if ($MQTT->connect(true, NULL, MQTT_USERNAME, MQTT_PASSWORD)) {
+					$MQTT->publish($topic, $command, 1, false);
+					$MQTT->close();
+					$this->log('config', $device_id, $command, $topic);
+				}
+				else {
+				    $this->log('config', $device_id, 'MQTT timeout');
+				}
+				break;
+
+			default:
+				die('ERR: UNKNOWN PROTOCOL');
 		}
-		else
-			$this->log('config', $device_id, 'Cant create UDP socket');
 	}
 
 	function device_config_save($device_id, $cfg_info) {
@@ -382,11 +415,11 @@ class clsRIFT3 {
 
 		if ($switch_protocol == 'UDP') {
 			echo $this->switch_send_udp_command($switch_id, $switch_id.':on');
-			$this->log('status', $switch_id, 'on'); //, 'udp');
+// 			$this->log('status', $switch_id, 'on'); //, 'udp');
 		}
 		elseif ($switch_protocol == 'HTTP') {
 			echo $this->switch_change_http($switch_id, 'on');
-			$this->log('status', $switch_id, 'on'); //, 'http');
+// 			$this->log('status', $switch_id, 'on'); //, 'http');
 		}
 		else
 			$this->log('error', 'Unknown switch protocol', $switch_protocol);
@@ -397,11 +430,11 @@ class clsRIFT3 {
 
 		if ($switch_protocol == 'UDP') {
 			echo $this->switch_send_udp_command($switch_id, $switch_id.':off');
-			$this->log('status', $switch_id, 'off'); //, 'udp');
+// 			$this->log('status', $switch_id, 'off'); //, 'udp');
 		}
 		elseif ($switch_protocol == 'HTTP') {
 			echo $this->switch_change_http($switch_id, 'off');
-			$this->log('status', $switch_id, 'off'); //, 'http');
+// 			$this->log('status', $switch_id, 'off'); //, 'http');
 		}
 		else
 			$this->log('error', 'Unknown switch protocol', $switch_protocol);
@@ -530,17 +563,17 @@ class clsRIFT3 {
 	}
 
 	function status_set_value($device_id, $value, $log = false) {
-		if ($value != $this->status[$device_id]['status']) {
+// 		if ($value != $this->status[$device_id]['status']) {
 			$this->status[$device_id]['status'] = $value;
 			$this->status[$device_id]['change'] = time();
 			$this->status_has_changed = true;
 			if ($log)
 				$this->log('status', $device_id, $value);
-		}
-		else {
-			if ($log)
-				$this->log('status', $device_id, 'nochg');
-		}
+// 		}
+// 		else {
+// 			if ($log)
+// 				$this->log('status', $device_id, 'nochg');
+// 		}
 	}
 
 	function status_get_value($device_id) {
@@ -560,8 +593,8 @@ class clsRIFT3 {
 			$lines = file($config_file);
 			foreach ($lines as $line) {
 				$fields = explode('->', trim($line));
-				if (count($fields) == 2) {
-					$this->trigger[$fields[0]][] = $fields[1];
+				if (count($fields) > 2) {
+					$this->trigger[$fields[0]][] = $fields[1].'/'.$fields[2];
 				}
 			}
 		}

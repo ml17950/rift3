@@ -1,11 +1,11 @@
 <?php
-// last change: 2018-07-31
+// last change: 2018-08-24
 
 	//error_reporting(E_ALL);
 	error_reporting(E_ALL & ~E_NOTICE);
 	ini_set('display_errors', 1);
 
-	define('VERSION', '2018-07-31');
+	define('VERSION', '2018-08-24');
 
 	define('ABSPATH', dirname(__FILE__));
 	define('CHMODMASK', 0775);
@@ -17,7 +17,7 @@
 	elseif (strpos($_SERVER['REQUEST_URI'], 'ifttt') !== false)
 		define('CLIENT', 'ifttt');
 	else
-		define('CLIENT', 'ui');
+		define('CLIENT', 'web');
 
 	if (empty($_SERVER['REQUEST_SCHEME']))
 		define('BASEURL', 'http://'.$_SERVER['HTTP_HOST'].dirname($_SERVER['SCRIPT_NAME']));

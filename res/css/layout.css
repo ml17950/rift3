@@ -1,4 +1,4 @@
-/* last change: 2018-07-30 */
+/* last change: 2018-08-18 */
 
 a:link { color: #aa6900; text-decoration: none; }
 a:visited { color: #aa6900; text-decoration: none; }
@@ -52,6 +52,7 @@ h1 {
 	color: #dfdfdf;
 	max-width: 400px;
 	width: 100vw;
+	min-height: 100vh;
 	margin: 0 auto 50px auto;
 	padding-bottom: 10px;
 }
@@ -119,7 +120,7 @@ h1 {
 			overflow: hidden;
 		}
 
-.device-container {
+.switch-container {
 	display: -webkit-flex;
 	display: flex;
 	-webkit-flex-direction: row;
@@ -129,8 +130,8 @@ h1 {
 	-webkit-justify-content: space-around;
     justify-content: space-around;
 }
-	.device-box {
-		flex: 0 1 45%;
+	.switch-box {
+		flex: 0 1 170px;
 		background: linear-gradient(to bottom, #393939 0%,#181A1C 100%);
 		border: 1px solid #555;
 		border-radius: 5px;
@@ -146,16 +147,16 @@ h1 {
 		flex-wrap: wrap;
 		align-items: center;
 	}
-		.device-icon {
+		.switch-icon {
 			flex: 0 0 48px;
 			padding: 3px;
 		}
-		.device-name {
+		.switch-name {
 			font-size: 1.1em;
 			padding: 0 2px 0 5px;
 			flex: 1;
 		}
-		.device-time {
+		.switch-time {
 			border-top: 1px solid #434343;
 			flex: 0 0 100%;
 			font-size: 0.7em;
@@ -188,7 +189,7 @@ h1 {
 			flex: 1;
 		}
 		.sensor-value {
-			flex: 1;
+			flex: 0 1 70px;
 			border-radius: 5px;
 			text-align: center;
 			padding: 3px 5px;
@@ -425,6 +426,41 @@ h1 {
 			.log-value a:link { color: white; text-decoration: none; }
 			.log-value a:visited { color: white; text-decoration: none; }
 
+.device-container {
+}
+	.device-box {
+		background-color: #1E2023;
+		border: 1px solid #555;
+		border-radius: 5px;
+		background: linear-gradient(to bottom, #393939 0%,#181A1C 100%);
+		color: #dfdfdf;
+		padding: 5px;
+		margin: 10px 5px;
+
+		display: -webkit-flex;
+		display: flex;
+		-webkit-flex-direction: row;
+		flex-direction: row;
+		-webkit-flex-wrap: wrap;
+		flex-wrap: wrap;
+	}
+	.device-box > div { margin-bottom: 5px; }
+	.device-box em { color: #808080; }
+		.device-name { flex: 0 0 100%; font-size: 1.5em; }
+		.device-id { flex: 0 0 100%; }
+		.device-wifiname { flex: 1 0 35%; }
+		.device-wifisignal { flex: 0 0 47px; }
+		.device-wifiip { flex: 0 0 115px; }
+		.device-protocol { flex: 0 0 45px; text-align: right; }
+		.device-voltage { flex: 1 0 42px; }
+		.device-sketch { flex: 0 0 80px; }
+		.device-ohoco { flex: 0 0 80px; }
+		.device-runtime { flex: 1 0 35%; text-align: right; }
+		.device-registered { flex: 0 0 144px; }
+		.device-connected { flex: 3; }
+		.device-lastping { flex: 2; text-align: right; }
+		.device-options { flex: 0 0 100%; padding-top: 10px; }
+
 .config-container {
 	border-bottom: 3px double #555;
 	padding: 0 5px 5px 5px;
@@ -457,7 +493,7 @@ h1 {
 				background: #6092ed;
 				color: white;
 				text-align: center;
-				padding: 2px 8px;
+				padding: 2px 5px;
 				margin: 5px 0;
 				border-radius: 5px;
 			}
@@ -550,5 +586,16 @@ h1 {
 	.form-container input[type="text"] {
 		width: 165px;
 		padding-top: 2px;
+	}
+}
+
+/*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+/*+++++ Tablet Styles ++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+@media screen and (min-width: 1160px) {
+	#content {
+		max-width: 90%;
+	}
+	.switch-box {
+		margin: 15px 10px;
 	}
 }

@@ -1,4 +1,4 @@
-// last change: 2018-08-10
+// last change: 2018-08-11
 
 var lastView = 0;
 
@@ -18,6 +18,7 @@ var rift3config = {
 			type: 'POST',
 			success: function(data) {
 // 				alert(data);
+				$('#js-'+cfg_key).css('background','green');
 			},
 			error: function (xhr, textStatus, thrownError) {
 	        	alert(textStatus);

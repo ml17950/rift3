@@ -1,5 +1,5 @@
 <?php
-// last change: 2018-07-31
+// last change: 2018-08-10
 	define('DEBUG' , false);
 // 	define('DEBUG' , true);
 
@@ -48,7 +48,7 @@
 
 			switch ($req_section) {
 				case 'device':
-					$rift3->device_register($req_device_id, $payload);
+					$rift3->device_register($req_device_id, $payload, 'HTTP');
 					echo 'OK';
 					break;
 
@@ -144,8 +144,6 @@
 			break;
 
 		case 'http':
-			$rift3->client = 'web';
-
 			switch ($req_section) {
 				case 'switch':
 					$req_device_id		= $path_array[2];
@@ -223,6 +221,7 @@
 						$req_device_val	= $path_array[4];
 						$rift3->status_set_value($req_device_id, $req_device_val, true);
 // 						$rift3->rules_check_conditions();
+						echo "OK";
 					}
 					elseif ($req_action == 'get') {
 						echo $rift3->status_get_value($req_device_id);
