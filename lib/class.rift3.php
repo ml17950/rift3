@@ -582,8 +582,7 @@ class clsRIFT3 {
 
 	function notify_via_telegram($message) {
 		include_once('class.telegram.php');
-		$telegram = new clsTelegram('433355349:AAHS6qPrfZ5iGkn68SLvhyyzUnsItLtjxOY'); // @Rift3Bot
-		$telegram->sendMessage('-257435565', $message);
+$xxx=0;
 		$this->log('notify', 'Telegram Message', 'sent');
 	}
 
