@@ -1,5 +1,5 @@
 <?php
-// last change: 2017-11-30
+// last change: 2018-07-30
 class clsSensorInterface {
 	var $rift3;
 
@@ -14,39 +14,102 @@ class clsSensorInterface {
 
 	function display() {
 		//echo __CLASS__.'::'.__FUNCTION__.'<br>';
-
-		$this->rift3->sensor_initialize();
-		$just_updated = time() - 60;
-		$today_updated = mktime(0,0,0);
-
 		echo "<div class='js-sensors sensor-container'>";
 
-		if (count($this->rift3->sensors) > 0) {
-			foreach ($this->rift3->sensors as $key => $sensor) {
-				echo "<div class='sensor-box' id='sensor-",$key,"'>"; // onclick='return sensor.show(\"",k,"\", \"",jsonObj['sensors'][k]['n'],"\", \"",jsonObj['sensors'][k]['t'],"\");'>";
-				echo "<div class='sensor-icon'><img src='res/img/types/",strtolower($sensor['type']),".png' width='32' height='32' alt='",$sensor['type'],"'></div>";
-				echo "<div class='sensor-name'>",$sensor['name'],"</div>";
-				if ($sensor['changed'] >= $just_updated)
-					echo "<div class='sensor-time is-just-updated'>",date('d.m H:i', $sensor['changed']),"</div>";
-				elseif ($sensor['changed'] >= $today_updated)
-					echo "<div class='sensor-time is-today-updated'>",date('d.m H:i', $sensor['changed']),"</div>";
-				else
-					echo "<div class='sensor-time'>",date('d.m H:i', $sensor['changed']),"</div>";
-				if ($sensor['value'] == 'ON')
-					echo "<div class='sensor-value is-on'>",$sensor['value'],"</div>";
-				else if ($sensor['value'] == 'OFF')
-					echo "<div class='sensor-value is-off'>",$sensor['value'],"</div>";
-				else
-					echo "<div class='sensor-value is-val'>",$sensor['value'],"</div>";
-				echo "</div>";
+		ksort($this->rift3->status);
+
+		foreach ($this->rift3->status as $sensor_id => $sensor_array) {
+			echo "<div class='sensor-box'>";
+
+			if (array_key_exists($sensor_id, $this->rift3->config['names']))
+				$sensor_name = $this->rift3->config['names'][$sensor_id];
+			else
+				$sensor_name = $sensor_id;
+
+			if (array_key_exists($sensor_id, $this->rift3->config['types']))
+				$sensor_type = $this->rift3->config['types'][$sensor_id];
+			else
+				$sensor_type = 'unknown';
+
+			switch ($sensor_type) {
+				case 'unknown':		$sensor_image = 'unknown.png'; break;
+				case 'time':		$sensor_image = 'time.png'; break;
+				case 'date':		$sensor_image = 'date.png'; break;
+				case 'temperature':	$sensor_image = 'temperature.png'; break;
+				case 'humidity':
+					$raw_val = str_replace(' %', '', $sensor_array['status']);
+					if ($raw_val < 40)
+						$sensor_image = 'humidity-low.png';
+					elseif ($raw_val > 60)
+						$sensor_image = 'humidity-high.png';
+					else
+						$sensor_image = 'humidity-ok.png';
+					break;
+// 				case 'daynight':	$sensor_image = 'daynight-'.$sensor_array['status'].'.png'; break;
+// 				case 'weather':		$sensor_image = 'weather-'.$sensor_array['status'].'.png'; break;
+// 				case 'gate':		$sensor_image = 'gate-'.$sensor_array['status'].'.png'; break;
+// 				case 'light':		$sensor_image = 'light-'.$sensor_array['status'].'.png'; break;
+				default:			$sensor_image = ''.$sensor_type.'-'.$sensor_array['status'].'.png'; break; //$sensor_image = 'unknown.png'; break;
 			}
+
+			echo "<div class='sensor-icon'><img src='res/img/sensors/",$sensor_image,"' width='32' height='32' alt='",$sensor_type,"' title='",$sensor_image,"'></div>";
+			echo "<div class='sensor-name'>",$sensor_name,"</div>";
+			switch ($sensor_array['status']) {
+				case 'on':
+				case 'open':
+				case 'home':
+					echo "<div class='sensor-value is-on'>",$sensor_array['status'],"</div>";
+					break;
+				case 'off':
+				case 'closed':
+				case 'away':
+					echo "<div class='sensor-value is-off'>",$sensor_array['status'],"</div>";
+					break;
+				default:
+					echo "<div class='sensor-value is-val'>",$sensor_array['status'],"</div>";
+			}
+			echo "<div class='sensor-change'>",dtstr($sensor_array['change']),"</div>";
+			echo "<div class='sensor-options'><a href='sensors.php?id=",$sensor_id,"&do=rename'><img src='res/img/ui/edit.png' width='24' height='24' alt='edit' title='edit'></a></div>";
+			echo "<div class='sensor-options'><a href='sensors.php?id=",$sensor_id,"&do=delete'><img src='res/img/ui/delete.png' width='24' height='24' alt='delete' title='delete'></a></div>";
+
+			echo "</div>";
 		}
 
 		echo "</div>"; // .sensor-container
+	}
 
-// 		echo "<div class='debug'>";
-// 		debugarr($this->rift3->sensors);
-// 		echo "</div>";
+	function rename($sensor_id) {
+		echo "<div class='form-container'>";
+
+		echo "<form method='POST' action='sensors.php' accept-charset='utf-8'>";
+		echo "<input type='hidden' name='do' value='save-name'>";
+		echo "<input type='hidden' name='id' value='",$sensor_id,"'>";
+
+		echo "<label for='currid'>Sensor-ID</label>";
+		echo "<span id='currid'>",$sensor_id,"</span><br>";
+
+		echo "<label for='newname'>Sensor-Name</label>";
+		echo "<input type='text' name='newname' value='",$this->rift3->config['names'][$sensor_id],"'><br>";
+
+		echo "<label for='newvalue'>Sensor-Wert</label>";
+		echo "<input type='text' name='newvalue' value='",$this->rift3->status[$sensor_id]['status'],"'><br>";
+
+		echo "<input type='submit' value='Speichern'>";
+		echo "</form>";
+
+		echo "<em>",TXTAPILINKS,"<br><br>";
+		if (array_key_exists($sensor_id, $this->rift3->config['switch'])) {
+			echo BASEURL.'/api/http/switch/'.$sensor_id.'/on';
+			echo "<br><br>";
+			echo BASEURL.'/api/http/switch/'.$sensor_id.'/off';
+			echo "<br><br>";
+			echo BASEURL.'/api/http/switch/'.$sensor_id.'/toggle';
+		}
+		else
+			echo BASEURL.'/api/http/sensor/set/'.$sensor_id.'/%val%';
+		echo "</em>";
+
+		echo "</div>";
 	}
 }
 ?>
