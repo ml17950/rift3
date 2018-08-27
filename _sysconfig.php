@@ -1,11 +1,11 @@
 <?php
-// last change: 2018-08-24
+// last change: 2018-08-27
 
 	//error_reporting(E_ALL);
 	error_reporting(E_ALL & ~E_NOTICE);
 	ini_set('display_errors', 1);
 
-	define('VERSION', '2018-08-24');
+	define('VERSION', '2018-08-27');
 
 	define('ABSPATH', dirname(__FILE__));
 	define('CHMODMASK', 0775);
@@ -40,4 +40,6 @@
 	define('MQTT_USERNAME',		'');
 	define('MQTT_PASSWORD',		'');
 	define('MQTT_UNDEF_PAYLOAD','0');
+
+	include_once('_telegram.php');
 ?>

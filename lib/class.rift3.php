@@ -1,5 +1,5 @@
 <?php
-// last change: 2018-08-24
+// last change: 2018-08-27
 class clsRIFT3 {
 	var $dbgout;
 	var $config;
@@ -53,7 +53,7 @@ class clsRIFT3 {
 		$file = ABSPATH.'/config/rift3.log';
 
 		if (!is_file($file)) {
-			file_put_contents($file, date('c')."\t".$this->client."\tconfig\tLogfile\tcreated\t\r\n");
+			file_put_contents($file, date('c')."\t".$this->client."\tconfig\tLogfile\tcreated\t\r\n", FILE_APPEND);
 			chmod($file, CHMODMASK);
 			return array();
 		}
@@ -582,7 +582,8 @@ class clsRIFT3 {
 
 	function notify_via_telegram($message) {
 		include_once('class.telegram.php');
-$xxx=0;
+		$telegram = new clsTelegram(TELEGRAM_API_KEY);
+		$telegram->sendMessage(TELEGRAM_CHAT_ID, $message);
 		$this->log('notify', 'Telegram Message', 'sent');
 	}
 
@@ -592,7 +593,7 @@ $xxx=0;
 			$lines = file($config_file);
 			foreach ($lines as $line) {
 				$fields = explode('->', trim($line));
-				if (count($fields) > 2) {
+				if (count($fields) == 2) {
 					$this->trigger[$fields[0]][] = $fields[1].'/'.$fields[2];
 				}
 			}
@@ -833,6 +834,7 @@ $xxx=0;
 					if ($cond2check > 0) {
 						foreach ($rule['conditions'] as $cid => $condition) {
 							$status_value = $this->status[$condition['status']]['status'];
+							$status_change = $this->status[$condition['status']]['change'];
 							$check_value = $condition['value'];
 							$status_value_float = floatval(preg_replace('/[^0-9.,]+/', '', $status_value));
 							$check_value_float  = floatval(preg_replace('/[^0-9.,]+/', '', $check_value));
@@ -845,6 +847,7 @@ $xxx=0;
 								case 'LEQ': if ($status_value_float <= $check_value_float) { $cond2run++; } break;
 								case 'GTR': if ($status_value_float > $check_value_float) { $cond2run++; } break;
 								case 'GEQ': if ($status_value_float >= $check_value_float) { $cond2run++; } break;
+								case 'OLD': if ((time() - $status_change) > $check_value) { $cond2run++; } break;
 								default: echo "ERROR in RULE/COND/TYPE";
 							}
 							echo $cond2run," ]]<br>";
@@ -871,4 +874,3 @@ $xxx=0;
 		}
 	}
 }
-?>

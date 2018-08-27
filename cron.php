@@ -1,5 +1,5 @@
 <?php
-// last change: 2018-07-30
+// last change: 2018-08-27
 	include_once('_sysconfig.php');
 	include_once('lib/common.php');
 	include_once('lib/lang_'.UI_LANGUAGE.'.php');
@@ -13,5 +13,5 @@
 	$rift3->rules_check_conditions();
 
 	if (date('H:i') == '02:16')
-		$rift3->log_resize(500);
+		$rift3->log_resize(1000);
 ?>

@@ -1,11 +1,18 @@
 <?php
-// last change: 2018-07-30
+// last change: 2018-08-27
 
 	define('TXTUNKNOWN',		'Unbekannt');
 
 	define('TXTON',				'An');
 	define('TXTOFF',			'Aus');
 	define('TXTAND',			'und');
+	define('TXTIF',				'wenn');
+	define('TXTIS',				'ist');
+	define('TXTASAS',			'wie/als');
+	define('TXTCURRENT',		'aktuell');
+	define('TXTBEFORE',			'vor');
+	define('TXTAVAILABLE',		'vorhanden');
+	define('TXTSAVE',			'Speichern');
 
 	define('TXTTODAY',			'Heute');
 	define('TXTYESTERDAY',		'Gestern');
@@ -20,6 +27,25 @@
 	define('TXTCREATED',		'Erstellt');
 	define('TXTUPDATED',		'Aktualisiert');
 	define('TXTACTIVATED',		'Ausgelöst');
+	define('TXTSET',			'setze');
+	define('TXTSETTO',			'auf');
+	define('TXTACTIVATE',		'aktiviere');
+	define('TXTCREATENEWRULE',	'Neue Regel erstellen');
+	define('TXTRULEID',			'Regel-ID');
+	define('TXTRULENAME',		'Regel-Name');
+	define('TXTRULECONDEQU',	'gleich');
+	define('TXTRULECONDNEQ',	'nicht gleich');
+	define('TXTRULECONDLSS',	'kleiner als');
+	define('TXTRULECONDLEQ',	'kleiner oder gleich');
+	define('TXTRULECONDGTR',	'größer als');
+	define('TXTRULECONDGEQ',	'größer oder gleich');
+	define('TXTRULECONDOLD',	'letzter Status mehr als (Sek.) her');
+	define('TXTACTIVATETRIGGER','dann aktiviere Trigger');
+	define('TXTORSETSTATUS',	'oder/und setze Status');
+	define('TXTORNEW',			'oder neuen');
+	
+	define('TXTxxx',		'xxx');
+	define('TXTxxx',		'xxx');
 
 	define('TXTAPILINKS',		'API-Links für externe Dienste (z. B. IFTTT)');
 
